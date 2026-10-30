@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seletor de Materiais Industriais - Engenharia e Seleção Técnica</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para Gráficos Comparativos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-sky-500 text-slate-900 p-2.5 rounded-xl font-bold flex items-center justify-center shadow-md shadow-sky-500/20">
+                    <i class="fa-solid fa-cubes text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        Seletor MatInd
+                        <span class="text-xs bg-sky-500/20 text-sky-300 font-semibold px-2 py-0.5 rounded-full border border-sky-500/30">v2.0 Pro</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Plataforma Interativa de Engenharia e Seleção de Materiais</p>
+                </div>
+            </div>
+
+            <!-- Stats Header Quick Indicators -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-6 text-xs text-slate-300 border-r border-slate-700 pr-6">
+                    <div>
+                        <span class="text-slate-400 block">Total no Banco:</span>
+                        <span id="stat-total" class="font-bold text-sm text-white">0</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block">Filtrados:</span>
+                        <span id="stat-filtered" class="font-bold text-sm text-sky-400">0</span>
+                    </div>
+                </div>
+
+                <button id="btn-mobile-filter" class="lg:hidden bg-slate-800 text-slate-200 px-3 py-2 rounded-lg text-sm border border-slate-700 hover:bg-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-filter text-sky-400"></i> Filtros
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WRAPPER -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full flex flex-col lg:flex-row gap-6">
+
+        <!-- SIDEBAR DE FILTROS -->
+        <aside id="sidebar-filters" class="fixed inset-y-0 left-0 z-40 w-80 bg-white lg:bg-transparent p-6 lg:p-0 border-r lg:border-r-0 border-slate-200 lg:static lg:w-72 flex-shrink-0 transition-transform transform -translate-x-full lg:translate-x-0 overflow-y-auto lg:overflow-visible">
+            
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 sticky top-20 space-y-6">
+                
+                <!-- Sidebar Header -->
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h2 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+                        <i class="fa-solid fa-sliders text-sky-600"></i> Filtros Específicos
+                    </h2>
+                    <button id="btn-close-mobile-filter" class="lg:hidden text-slate-400 hover:text-slate-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    <button id="btn-reset-filters" class="text-xs text-sky-600 hover:text-sky-800 font-medium transition-colors hidden lg:inline-block">
+                        <i class="fa-solid fa-rotate-left"></i> Limpar
+                    </button>
+                </div>
+
+                <!-- Filtro de Busca por Texto -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Busca Direta</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="filter-search" placeholder="Ex: Aço, Alumínio, PEEK..." class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all">
+                    </div>
+                </div>
+
+                <!-- Categoria do Material -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Classe do Material</label>
+                    <select id="filter-category" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700">
+                        <option value="all">Todas as Classes</option>
+                        <option value="ferrous">Metais Ferrosos</option>
+                        <option value="non-ferrous">Metais Não-Ferrosos</option>
+                        <option value="polymer">Polímeros Técnicos</option>
+                        <option value="composite">Compósitos e Avançados</option>
+                    </select>
+                </div>
+
+                <!-- Faixa de Resistência à Tração (MPa) -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Mín. Tração (MPa)</label>
+                        <span id="val-tensile" class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded border border-sky-100">0 MPa</span>
+                    </div>
+                    <input type="range" id="filter-tensile" min="0" max="1800" step="50" value="0" class="w-full accent-sky-600 cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                        <span>0 MPa</span>
+                        <span>900 MPa</span>
+                        <span>1800+ MPa</span>
+                    </div>
+                </div>
+
+                <!-- Densidade Máxima (g/cm³) -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold text-slate-700 uppercase tracking-wider">Densidade Máx (g/cm³)</label>
+                        <span id="val-density" class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded border border-sky-100">10.0 g/cm³</span>
+                    </div>
+                    <input type="range" id="filter-density" min="0.8" max="10.0" step="0.2" value="10.0" class="w-full accent-sky-600 cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                        <span>0.8 (Leve)</span>
+                        <span>5.0</span>
+                        <span>10.0 (Denso)</span>
+                    </div>
+                </div>
+
+                <!-- Resistência à Corrosão -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Resistência à Corrosão</label>
+                    <select id="filter-corrosion" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700">
+                        <option value="all">Qualquer Resistência</option>
+                        <option value="Baixa">Baixa ou Superior</option>
+                        <option value="Média">Média ou Superior</option>
+                        <option value="Alta">Alta ou Superior</option>
+                        <option value="Excelente">Apenas Excelente</option>
+                    </select>
+                </div>
+
+                <!-- Faixa de Custo Relativo -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Custo Relativo ($)</label>
+                    <div class="grid grid-cols-4 gap-1.5" id="cost-filters">
+                        <button type="button" data-cost="1" class="btn-cost-filter border border-slate-200 py-1.5 text-xs font-semibold rounded text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-colors bg-slate-50">$</button>
+                        <button type="button" data-cost="2" class="btn-cost-filter border border-slate-200 py-1.5 text-xs font-semibold rounded text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-colors bg-slate-50">$$</button>
+                        <button type="button" data-cost="3" class="btn-cost-filter border border-slate-200 py-1.5 text-xs font-semibold rounded text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-colors bg-slate-50">$$$</button>
+                        <button type="button" data-cost="4" class="btn-cost-filter border border-slate-200 py-1.5 text-xs font-semibold rounded text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-colors bg-slate-50">$$$$</button>
+                    </div>
+                    <span class="text-[11px] text-slate-400 mt-1 block">Clique para filtrar por faixa orçamentária</span>
+                </div>
+
+                <!-- Recomendação de Aplicação -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Aplicação Recomendada</label>
+                    <select id="filter-application" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700">
+                        <option value="all">Todas as Aplicações</option>
+                        <option value="Estrutural">Estrutural & Mecânica</option>
+                        <option value="Aeroespacial">Aeroespacial / Aeronáutico</option>
+                        <option value="Químico">Processamento Químico / Corrosivo</option>
+                        <option value="Médico">Médico / Biomédico</option>
+                        <option value="Alta Temperatura">Altas Temperaturas</option>
+                        <option value="Desgaste">Peças de Desgaste / Mancais</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100 lg:hidden">
+                    <button id="btn-reset-filters-mobile" class="w-full bg-slate-100 text-slate-700 py-2 rounded-lg text-sm font-semibold hover:bg-slate-200">
+                        Redefinir Todos os Filtros
+                    </button>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- ÁREA PRINCIPAL / CONTEÚDO -->
+        <main class="flex-1 min-w-0 flex flex-col gap-5">
+
+            <!-- CONTROL BAR (Pesquisa rápida, Ordenação e Modos de Exibição) -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- Ordenação -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ordenar:</span>
+                    <select id="sort-by" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <option value="name-asc">Nome (A - Z)</option>
+                        <option value="tensile-desc">Maior Tração (MPa)</option>
+                        <option value="density-asc">Menor Densidade (Mais Leve)</option>
+                        <option value="specific-desc">Maior Res. Específica (Tração/Densidade)</option>
+                        <option value="cost-asc">Menor Custo ($)</option>
+                    </select>
+                </div>
+
+                <!-- Toggles de Visualização (Cards vs Tabela) -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 font-medium hidden sm:inline">Modo:</span>
+                    <div class="bg-slate-100 p-1 rounded-lg border border-slate-200 flex items-center gap-1">
+                        <button id="btn-view-cards" class="px-2.5 py-1 text-xs font-medium rounded-md bg-white text-sky-600 shadow-sm border border-slate-200 transition-all flex items-center gap-1">
+                            <i class="fa-solid fa-border-all"></i> Cards
+                        </button>
+                        <button id="btn-view-table" class="px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1">
+                            <i class="fa-solid fa-list-ul"></i> Tabela
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD GRID CONTAINER -->
+            <div id="container-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+
+            <!-- TABLE CONTAINER (Oculto por padrão) -->
+            <div id="container-table" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                <th class="p-3 text-center w-10">Comp.</th>
+                                <th class="p-3">Material</th>
+                                <th class="p-3">Classe</th>
+                                <th class="p-3 text-right">Tração (MPa)</th>
+                                <th class="p-3 text-right">Densidade (g/cm³)</th>
+                                <th class="p-3 text-center">Corrosão</th>
+                                <th class="p-3 text-center">Custo</th>
+                                <th class="p-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- EMPTY STATE (Quando nenhum filtro retorna resultados) -->
+            <div id="empty-state" class="hidden bg-white p-12 rounded-2xl border border-dashed border-slate-300 text-center">
+                <div class="w-16 h-16 bg-sky-50 text-sky-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-1">Nenhum material encontrado</h3>
+                <p class="text-sm text-slate-500 mb-4 max-w-md mx-auto">Tente ajustar os filtros de resistência, densidade ou custo para ampliar sua busca no banco de materiais.</p>
+                <button id="btn-reset-empty" class="bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition-colors">
+                    Redefinir Filtros
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- FLOATING BAR PARA COMPARAÇÃO LADO A LADO -->
+    <div id="compare-bar" class="fixed bottom-0 inset-x-0 bg-slate-900/95 backdrop-blur-md text-white border-t border-slate-700 p-4 shadow-2xl transition-transform transform translate-y-full z-40">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="bg-sky-500/20 text-sky-400 p-2 rounded-lg border border-sky-500/30">
+                    <i class="fa-solid fa-code-compare text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm">Modo de Comparação Dinâmica</h4>
+                    <p class="text-xs text-slate-400"><span id="compare-count" class="text-sky-400 font-bold">0</span>/4 materiais selecionados</p>
+                </div>
+            </div>
+
+            <!-- Mini Lista dos itens selecionados -->
+            <div id="compare-chips" class="flex flex-wrap items-center gap-2 overflow-x-auto max-w-full sm:max-w-md py-1">
+                <!-- Chips inseridos via JS -->
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button id="btn-clear-compare" class="text-xs text-slate-400 hover:text-white px-3 py-2">
+                    Limpar Seleção
+                </button>
+                <button id="btn-open-compare" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20">
+                    <i class="fa-solid fa-chart-radar"></i> Comparar Lado a Lado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: DETALHES DO MATERIAL (FICHA TÉCNICA) -->
+    <div id="modal-detail" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200">
+            <!-- Modal Header -->
+            <div class="bg-slate-900 text-white p-6 relative">
+                <button id="btn-close-detail" class="absolute top-5 right-5 text-slate-400 hover:text-white w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <span id="detail-category-badge" class="inline-block text-[11px] font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 px-2.5 py-0.5 rounded-full border border-sky-500/30 mb-2">Classe</span>
+                <h2 id="detail-name" class="text-2xl font-bold text-white">Nome do Material</h2>
+                <p id="detail-desc" class="text-xs text-slate-300 mt-1">Descrição sucinta do material e suas principais aplicações industriais.</p>
+            </div>
+
+            <!-- Modal Body (Conteúdo da Ficha Técnica) -->
+            <div class="p-6 overflow-y-auto space-y-6 text-sm">
+                
+                <!-- Propriedades Mecânicas Principais -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high text-sky-600"></i> Propriedades Mecânicas
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Resistência Tração</span>
+                            <span id="detail-tensile" class="font-bold text-slate-800 text-base">0 MPa</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Limite Escoamento</span>
+                            <span id="detail-yield" class="font-bold text-slate-800 text-base">0 MPa</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Dureza Estimada</span>
+                            <span id="detail-hardness" class="font-bold text-slate-800 text-base">-</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Módulo de Elasticidade</span>
+                            <span id="detail-elastic" class="font-bold text-slate-800 text-base">0 GPa</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 col-span-2 sm:col-span-2">
+                            <span class="text-slate-500 text-[11px] block">Resistência Específica (Tração/Densidade)</span>
+                            <span id="detail-specific-strength" class="font-bold text-sky-600 text-base">0 kN·m/kg</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Propriedades Físicas e Térmicas -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-temperature-arrow-up text-sky-600"></i> Físicas e Térmicas
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Densidade</span>
+                            <span id="detail-density" class="font-bold text-slate-800 text-base">0 g/cm³</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Temp. Máx de Trabalho</span>
+                            <span id="detail-temp" class="font-bold text-slate-800 text-base">0 °C</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-slate-500 text-[11px] block">Resistência Corrosão</span>
+                            <span id="detail-corrosion" class="font-bold text-slate-800 text-base">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processabilidade e Usinabilidade -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-sky-600"></i> Processamento & Manufatura
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                            <span class="text-slate-500 text-xs">Usinabilidade:</span>
+                            <span id="detail-machinability" class="font-semibold text-slate-800 text-xs bg-white px-2 py-1 rounded border border-slate-200">Alta</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                            <span class="text-slate-500 text-xs">Soldabilidade:</span>
+                            <span id="detail-weldability" class="font-semibold text-slate-800 text-xs bg-white px-2 py-1 rounded border border-slate-200">Boa</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Aplicações Típicas -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Aplicações Recomendadas</h3>
+                    <div id="detail-applications" class="flex flex-wrap gap-2">
+                        <!-- Badges via JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-end">
+                <button id="btn-close-detail-footer" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors">
+                    Fechar Ficha Técnica
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: COMPARAÇÃO LADO A LADO E GRÁFICOS -->
+    <div id="modal-compare" class="fixed inset-0 z-50 hidden bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+            
+            <!-- Compare Header -->
+            <div class="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="bg-sky-500 text-slate-950 p-2 rounded-lg font-bold">
+                        <i class="fa-solid fa-chart-radar"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold">Análise Comparativa de Materiais</h2>
+                        <p class="text-xs text-slate-400">Benchmarking de Propriedades e Desempenho Relativo</p>
+                    </div>
+                </div>
+                <button id="btn-close-compare" class="text-slate-400 hover:text-white w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Compare Body -->
+            <div class="p-5 overflow-y-auto space-y-8">
+                
+                <!-- GRÁFICOS COMPARATIVOS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Radar Chart (Perfis de Desempenho Relativo) -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center">
+                        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 text-center">
+                            Radar de Desempenho Adimensional (0-100)
+                        </h3>
+                        <div class="w-full h-64 relative flex items-center justify-center">
+                            <canvas id="chart-radar"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart (Resistência vs Densidade) -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col items-center">
+                        <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 text-center">
+                            Comparativo Tração (MPa) vs Densidade (g/cm³)
+                        </h3>
+                        <div class="w-full h-64 relative flex items-center justify-center">
+                            <canvas id="chart-bar"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABELA COMPARATIVE LADO A LADO -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-table-cells text-sky-600"></i> Matriz Detalhada de Especificações
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead id="compare-table-head">
+                                <!-- Preenchido via JS -->
+                            </thead>
+                            <tbody id="compare-table-body" class="divide-y divide-slate-200 text-slate-700">
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Compare Footer -->
+            <div class="bg-slate-50 p-4 border-t border-slate-200 flex justify-between items-center">
+                <span class="text-xs text-slate-500">Dados baseados em ligas normatizadas (ASTM/AISI/ISO)</span>
+                <button id="btn-close-compare-footer" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors">
+                    Fechar Comparação
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // 1. BANCO DE DADOS DE MATERIAIS INDUSTRIAIS
+        // ==========================================
+        const materialsData = [
+            {
+                id: 'mat-1',
+                name: 'Aço Carbono AISI 1020',
+                category: 'ferrous',
+                categoryLabel: 'Aço Ferroso',
+                tensileStrength: 420, // MPa
+                yieldStrength: 350,   // MPa
+                density: 7.87,        // g/cm³
+                costTier: 1,          // 1: $, 2: $$, 3: $$$, 4: $$$$
+                costLabel: '$',
+                corrosion: 'Baixa',
+                corrosionScore: 1,    // Scale 1-4
+                maxTemp: 400,         // °C
+                hardness: '121 HB',
+                elasticModulus: 200,  // GPa
+                machinability: 'Excelente (85%)',
+                weldability: 'Excelente',
+                applications: ['Estrutural', 'Eixos Automotivos', 'Tubulações Civis', 'Chapas Navais'],
+                description: 'Aço de baixo carbono com alta ductilidade e excelente soldabilidade. Amplamente utilizado para componentes mecânicos comuns.'
+            },
+            {
+                id: 'mat-2',
+                name: 'Aço Inoxidável AISI 316L',
+                category: 'ferrous',
+                categoryLabel: 'Aço Inoxidável',
+                tensileStrength: 580,
+                yieldStrength: 290,
+                density: 8.00,
+                costTier: 3,
+                costLabel: '$$$',
+                corrosion: 'Excelente',
+                corrosionScore: 4,
+                maxTemp: 800,
+                hardness: '150 HB',
+                elasticModulus: 193,
+                machinability: 'Moderada (50%)',
+                weldability: 'Excelente',
+                applications: ['Químico', 'Médico', 'Marítimo', 'Alimentício'],
+                description: 'Aço inox austenítico com adição de Molibdênio. Oferece altíssima resistência à corrosão por pites e frestas em ambientes marinhos e químicos.'
+            },
+            {
+                id: 'mat-3',
+                name: 'Alumínio 6061-T6',
+                category: 'non-ferrous',
+                categoryLabel: 'Liga de Alumínio',
+                tensileStrength: 310,
+                yieldStrength: 276,
+                density: 2.70,
+                costTier: 2,
+                costLabel: '$$',
+                corrosion: 'Alta',
+                corrosionScore: 3,
+                maxTemp: 150,
+                hardness: '95 HB',
+                elasticModulus: 68.9,
+                machinability: 'Boa (80%)',
+                weldability: 'Boa (requer cuidados)',
+                applications: ['Aeroespacial', 'Estrutural', 'Bicicletas', 'Chassis Automotivos'],
+                description: 'Liga estrutural leve de alumínio endurecida por precipitação. Excelente relação resistência/peso e boa resistência à corrosão atmosférica.'
+            },
+            {
+                id: 'mat-4',
+                name: 'Titânio Grau 5 (Ti-6Al-4V)',
+                category: 'non-ferrous',
+                categoryLabel: 'Liga de Titânio',
+                tensileStrength: 950,
+                yieldStrength: 880,
+                density: 4.43,
+                costTier: 4,
+                costLabel: '$$$$',
+                corrosion: 'Excelente',
+                corrosionScore: 4,
+                maxTemp: 400,
+                hardness: '36 HRC',
+                elasticModulus: 114,
+                machinability: 'Difícil (22%)',
+                weldability: 'Razoável (Atmosf. Inerte)',
+                applications: ['Aeroespacial', 'Médico', 'Alta Temperatura', 'Implantes'],
+                description: 'Líder no setor aeroespacial e biomédico. Oferece baixíssima densidade combinada a uma altíssima resistência mecânica e total biocompatibilidade.'
+            },
+            {
+                id: 'mat-5',
+                name: 'Polímero PEEK (Poliéter-éter-cetona)',
+                category: 'polymer',
+                categoryLabel: 'Termoplástico de Engenharia',
+                tensileStrength: 100,
+                yieldStrength: 95,
+                density: 1.32,
+                costTier: 4,
+                costLabel: '$$$$',
+                corrosion: 'Excelente',
+                corrosionScore: 4,
+                maxTemp: 250,
+                hardness: '85 Shore D',
+                elasticModulus: 3.6,
+                machinability: 'Boa',
+                weldability: 'Não recomendada',
+                applications: ['Aeroespacial', 'Químico', 'Médico', 'Isolamento Elétrico'],
+                description: 'Termoplástico de altíssimo desempenho. Mantém rigidez e integridade mecânica em temperaturas elevadas e sob ataques químicos severos.'
+            },
+            {
+                id: 'mat-6',
+                name: 'Polietileno UHMW-PE',
+                category: 'polymer',
+                categoryLabel: 'Polímero Ultra Denso',
+                tensileStrength: 40,
+                yieldStrength: 22,
+                density: 0.93,
+                costTier: 2,
+                costLabel: '$$',
+                corrosion: 'Excelente',
+                corrosionScore: 4,
+                maxTemp: 80,
+                hardness: '65 Shore D',
+                elasticModulus: 0.7,
+                machinability: 'Boa (Ferramentas afiadas)',
+                weldability: 'Não recomendada',
+                applications: ['Desgaste', 'Revestimentos Anti-atrito', 'Guias de Corrente', 'Médico'],
+                description: 'Extremamente leve e com baixíssimo coeficiente de atrito. Excepcional resistência à abrasão e ao impacto.'
+            },
+            {
+                id: 'mat-7',
+                name: 'Bronze TM 23 (SAE 660)',
+                category: 'non-ferrous',
+                categoryLabel: 'Liga de Cobre/Bronze',
+                tensileStrength: 240,
+                yieldStrength: 120,
+                density: 8.80,
+                costTier: 3,
+                costLabel: '$$$',
+                corrosion: 'Alta',
+                corrosionScore: 3,
+                maxTemp: 200,
+                hardness: '65 HB',
+                elasticModulus: 100,
+                machinability: 'Excelente (90%)',
+                weldability: 'Média',
+                applications: ['Desgaste', 'Buchas Antiatrito', 'Mancais', 'Válvulas'],
+                description: 'Bronze antifricção autolubrificante para cargas médias e altas velocidades. Excelente usinabilidade e propriedades anti-engripamento.'
+            },
+            {
+                id: 'mat-8',
+                name: 'Superliga Inconel 625',
+                category: 'non-ferrous',
+                categoryLabel: 'Superliga de Níquel',
+                tensileStrength: 930,
+                yieldStrength: 517,
+                density: 8.44,
+                costTier: 4,
+                costLabel: '$$$$',
+                corrosion: 'Excelente',
+                corrosionScore: 4,
+                maxTemp: 980,
+                hardness: '220 HB',
+                elasticModulus: 208,
+                machinability: 'Muito Difícil',
+                weldability: 'Excelente',
+                applications: ['Alta Temperatura', 'Químico', 'Turbinas a Gás', 'Offshore'],
+                description: 'Superliga à base de Níquel-Cromo-Molibdênio. Projetada para condições extremas de oxidação, corrosão e temperaturas superaltas.'
+            },
+            {
+                id: 'mat-9',
+                name: 'Aço Ferramenta AISI D2',
+                category: 'ferrous',
+                categoryLabel: 'Aço Ferramenta',
+                tensileStrength: 1750,
+                yieldStrength: 1500,
+                density: 7.70,
+                costTier: 3,
+                costLabel: '$$$',
+                corrosion: 'Média',
+                corrosionScore: 2,
+                maxTemp: 500,
+                hardness: '60 HRC (Tratado)',
+                elasticModulus: 210,
+                machinability: 'Baixa (Usinar recozido)',
+                weldability: 'Muito Difícil',
+                applications: ['Desgaste', 'Matrizes de Estampo', 'Facas Industriais', 'Moldes'],
+                description: 'Aço ferramenta para trabalho a frio com alto teor de Cromo e Carbono. Altíssima resistência ao desgaste abrasivo após tempera.'
+            },
+            {
+                id: 'mat-10',
+                name: 'Compósito Fibra de Carbono / Epóxi',
+                category: 'composite',
+                categoryLabel: 'Compósito Avançado',
+                tensileStrength: 1500,
+                yieldStrength: 1200,
+                density: 1.55,
+                costTier: 4,
+                costLabel: '$$$$',
+                corrosion: 'Excelente',
+                corrosionScore: 4,
+                maxTemp: 120,
+                hardness: 'N/A (Compósito)',
+                elasticModulus: 135,
+                machinability: "Especial (Corte d'água/Diamante)",
+                weldability: 'Não recomendada (Apenas Colagem)',
+                applications: ['Aeroespacial', 'Estrutural', 'Competições', 'Esportes de Alta Performance'],
+                description: 'Material compósito reforçado com fibras de carbono unidirecionais. Proporciona a mais elevada rigidez e resistência específica do mercado.'
+            }
+        ];
+
+        // ==========================================
+        // 2. ESTADO DA APLICAÇÃO (STATE)
+        // ==========================================
+        let filters = {
+            search: '',
+            category: 'all',
+            minTensile: 0,
+            maxDensity: 10.0,
+            corrosion: 'all',
+            costs: [], // array de números ex: [1, 2]
+            application: 'all'
+        };
+
+        let currentSort = 'name-asc';
+        let currentView = 'cards'; // 'cards' ou 'table'
+        let selectedCompareIds = []; // Máximo 4 itens
+
+        // Instâncias do Chart.js
+        let radarChartInstance = null;
+        let barChartInstance = null;
+
+        // ==========================================
+        // 3. ELEMENTOS DO DOM
+        // ==========================================
+        const containerCards = document.getElementById('container-cards');
+        const containerTable = document.getElementById('container-table');
+        const tableBody = document.getElementById('table-body');
+        const emptyState = document.getElementById('empty-state');
+
+        const statTotal = document.getElementById('stat-total');
+        const statFiltered = document.getElementById('stat-filtered');
+
+        const compareBar = document.getElementById('compare-bar');
+        const compareCount = document.getElementById('compare-count');
+        const compareChips = document.getElementById('compare-chips');
+
+        // Modal Ficha Técnica
+        const modalDetail = document.getElementById('modal-detail');
+
+        // Modal Comparativo
+        const modalCompare = document.getElementById('modal-compare');
+
+        // ==========================================
+        // 4. LÓGICA DE FILTRAGEM E ORDENAÇÃO
+        // ==========================================
+        function getFilteredMaterials() {
+            return materialsData.filter(mat => {
+                // Busca Texto
+                if (filters.search) {
+                    const q = filters.search.toLowerCase();
+                    const matchName = mat.name.toLowerCase().includes(q);
+                    const matchDesc = mat.description.toLowerCase().includes(q);
+                    const matchApps = mat.applications.some(a => a.toLowerCase().includes(q));
+                    if (!matchName && !matchDesc && !matchApps) return false;
+                }
+
+                // Categoria
+                if (filters.category !== 'all' && mat.category !== filters.category) {
+                    return false;
+                }
+
+                // Tração Mínima
+                if (mat.tensileStrength < filters.minTensile) {
+                    return false;
+                }
+
+                // Densidade Máxima
+                if (mat.density > filters.maxDensity) {
+                    return false;
+                }
+
+                // Corrosão
+                if (filters.corrosion !== 'all') {
+                    const levels = { 'Baixa': 1, 'Média': 2, 'Alta': 3, 'Excelente': 4 };
+                    const requiredScore = levels[filters.corrosion] || 1;
+                    if (mat.corrosionScore < requiredScore) return false;
+                }
+
+                // Custo
+                if (filters.costs.length > 0 && !filters.costs.includes(mat.costTier)) {
+                    return false;
+                }
+
+                // Aplicação
+                if (filters.application !== 'all') {
+                    if (!mat.applications.includes(filters.application)) return false;
+                }
+
+                return true;
+            }).sort((a, b) => {
+                // Ordenação
+                if (currentSort === 'name-asc') return a.name.localeCompare(b.name);
+                if (currentSort === 'tensile-desc') return b.tensileStrength - a.tensileStrength;
+                if (currentSort === 'density-asc') return a.density - b.density;
+                if (currentSort === 'specific-desc') {
+                    const specA = a.tensileStrength / a.density;
+                    const specB = b.tensileStrength / b.density;
+                    return specB - specA;
+                }
+                if (currentSort === 'cost-asc') return a.costTier - b.costTier;
+                return 0;
+            });
+        }
+
+        // ==========================================
+        // 5. RENDERIZAÇÃO DE CARDS E TABELA
+        // ==========================================
+        function render() {
+            const filtered = getFilteredMaterials();
+
+            // Atualizar contadores
+            statTotal.textContent = materialsData.length;
+            statFiltered.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                containerCards.classList.add('hidden');
+                containerTable.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            if (currentView === 'cards') {
+                containerCards.classList.remove('hidden');
+                containerTable.classList.add('hidden');
+                renderCards(filtered);
+            } else {
+                containerCards.classList.add('hidden');
+                containerTable.classList.remove('hidden');
+                renderTable(filtered);
+            }
+
+            updateCompareBar();
+        }
+
+        // Helper Corrosão Badge
+        function getCorrosionBadgeHtml(level) {
+            const maps = {
+                'Baixa': 'bg-rose-50 text-rose-700 border-rose-200',
+                'Média': 'bg-amber-50 text-amber-700 border-amber-200',
+                'Alta': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                'Excelente': 'bg-sky-50 text-sky-700 border-sky-200'
+            };
+            const cls = maps[level] || 'bg-slate-100 text-slate-700 border-slate-200';
+            return `<span class="text-[10px] font-semibold px-2 py-0.5 rounded border ${cls}">${level}</span>`;
+        }
+
+        // Helper Categoria Badge
+        function getCategoryBadgeHtml(catLabel) {
+            return `<span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${catLabel}</span>`;
+        }
+
+        // Render Cards View
+        function renderCards(materials) {
+            containerCards.innerHTML = materials.map(mat => {
+                const isChecked = selectedCompareIds.includes(mat.id);
+                const specStrength = (mat.tensileStrength / mat.density).toFixed(1);
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md border border-slate-200/80 transition-all flex flex-col justify-between relative group">
+                        <div>
+                            <!-- Card Header -->
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                ${getCategoryBadgeHtml(mat.categoryLabel)}
+                                
+                                <label class="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-500 hover:text-sky-600 select-none">
+                                    <input type="checkbox" class="chk-compare rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer" data-id="${mat.id}" ${isChecked ? 'checked' : ''}>
+                                    Comparar
+                                </label>
+                            </div>
+
+                            <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-sky-600 transition-colors">${mat.name}</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-4">${mat.description}</p>
+
+                            <!-- Propriedades Grid Mini -->
+                            <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs mb-4">
+                                <div>
+                                    <span class="text-[10px] text-slate-400 block uppercase">Resist. Tração</span>
+                                    <span class="font-bold text-slate-800">${mat.tensileStrength} <span class="text-[10px] font-normal text-slate-500">MPa</span></span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-slate-400 block uppercase">Densidade</span>
+                                    <span class="font-bold text-slate-800">${mat.density} <span class="text-[10px] font-normal text-slate-500">g/cm³</span></span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-slate-400 block uppercase">Res. Específica</span>
+                                    <span class="font-bold text-sky-600">${specStrength}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-slate-400 block uppercase">Custo Relativo</span>
+                                    <span class="font-bold text-amber-600">${mat.costLabel}</span>
+                                </div>
+                            </div>
+
+                            <!-- Tags Rápidas -->
+                            <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-100">
+                                <span class="text-slate-400">Corrosão:</span>
+                                ${getCorrosionBadgeHtml(mat.corrosion)}
+                            </div>
+                        </div>
+
+                        <!-- Card Footer Action -->
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] text-slate-400"><i class="fa-solid fa-fire-flame-curved"></i> até ${mat.maxTemp}°C</span>
+                            <button onclick="openDetailModal('${mat.id}')" class="text-xs font-bold text-sky-600 hover:text-sky-800 flex items-center gap-1 hover:underline">
+                                Ficha Técnica <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            bindCheckboxEvents();
+        }
+
+        // Render Table View
+        function renderTable(materials) {
+            tableBody.innerHTML = materials.map(mat => {
+                const isChecked = selectedCompareIds.includes(mat.id);
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="p-3 text-center">
+                            <input type="checkbox" class="chk-compare rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer" data-id="${mat.id}" ${isChecked ? 'checked' : ''}>
+                        </td>
+                        <td class="p-3">
+                            <span class="font-bold text-slate-800 block">${mat.name}</span>
+                            <span class="text-[11px] text-slate-400 truncate max-w-xs block">${mat.applications.slice(0,2).join(', ')}</span>
+                        </td>
+                        <td class="p-3">${getCategoryBadgeHtml(mat.categoryLabel)}</td>
+                        <td class="p-3 text-right font-bold text-slate-800">${mat.tensileStrength} MPa</td>
+                        <td class="p-3 text-right font-medium text-slate-600">${mat.density} g/cm³</td>
+                        <td class="p-3 text-center">${getCorrosionBadgeHtml(mat.corrosion)}</td>
+                        <td class="p-3 text-center font-bold text-amber-600">${mat.costLabel}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="openDetailModal('${mat.id}')" class="text-slate-500 hover:text-sky-600 p-1 rounded transition-colors" title="Ver Ficha Técnica">
+                                <i class="fa-solid fa-file-lines text-base"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            bindCheckboxEvents();
+        }
+
+        // Eventos dos Checkboxes de Comparação
+        function bindCheckboxEvents() {
+            document.querySelectorAll('.chk-compare').forEach(chk => {
+                chk.addEventListener('change', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (e.target.checked) {
+                        if (selectedCompareIds.length >= 4) {
+                            alert('Você pode comparar no máximo 4 materiais simultaneamente.');
+                            e.target.checked = false;
+                            return;
+                        }
+                        if (!selectedCompareIds.includes(id)) {
+                            selectedCompareIds.push(id);
+                        }
+                    } else {
+                        selectedCompareIds = selectedCompareIds.filter(item => item !== id);
+                    }
+                    updateCompareBar();
+                });
+            });
+        }
+
+        // Atualizar Barra de Comparação Flutuante
+        function updateCompareBar() {
+            compareCount.textContent = selectedCompareIds.length;
+
+            if (selectedCompareIds.length > 0) {
+                compareBar.classList.remove('translate-y-full');
+
+                // Render Chips
+                compareChips.innerHTML = selectedCompareIds.map(id => {
+                    const mat = materialsData.find(m => m.id === id);
+                    return `
+                        <span class="inline-flex items-center gap-1.5 bg-slate-800 text-slate-200 text-xs px-2.5 py-1 rounded-full border border-slate-700">
+                            ${mat ? mat.name : ''}
+                            <button onclick="removeCompareItem('${id}')" class="text-slate-400 hover:text-rose-400 ml-0.5">
+                                <i class="fa-solid fa-xmark text-[10px]"></i>
+                            </button>
+                        </span>
+                    `;
+                }).join('');
+
+            } else {
+                compareBar.classList.add('translate-y-full');
+            }
+        }
+
+        function removeCompareItem(id) {
+            selectedCompareIds = selectedCompareIds.filter(item => item !== id);
+            render();
+        }
+
+        // ==========================================
+        // 6. MODAL FICHA TÉCNICA (DETALHES)
+        // ==========================================
+        function openDetailModal(id) {
+            const mat = materialsData.find(m => m.id === id);
+            if (!mat) return;
+
+            document.getElementById('detail-category-badge').textContent = mat.categoryLabel;
+            document.getElementById('detail-name').textContent = mat.name;
+            document.getElementById('detail-desc').textContent = mat.description;
+
+            document.getElementById('detail-tensile').textContent = `${mat.tensileStrength} MPa`;
+            document.getElementById('detail-yield').textContent = `${mat.yieldStrength} MPa`;
+            document.getElementById('detail-hardness').textContent = mat.hardness;
+            document.getElementById('detail-elastic').textContent = `${mat.elasticModulus} GPa`;
+
+            const specificStr = (mat.tensileStrength / mat.density).toFixed(1);
+            document.getElementById('detail-specific-strength').textContent = `${specificStr} kN·m/kg`;
+
+            document.getElementById('detail-density').textContent = `${mat.density} g/cm³`;
+            document.getElementById('detail-temp').textContent = `${mat.maxTemp} °C`;
+            document.getElementById('detail-corrosion').textContent = mat.corrosion;
+
+            document.getElementById('detail-machinability').textContent = mat.machinability;
+            document.getElementById('detail-weldability').textContent = mat.weldability;
+
+            const appsContainer = document.getElementById('detail-applications');
+            appsContainer.innerHTML = mat.applications.map(app => `
+                <span class="bg-sky-50 text-sky-700 text-xs px-3 py-1 rounded-lg border border-sky-100 font-medium">${app}</span>
+            `).join('');
+
+            modalDetail.classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            modalDetail.classList.add('hidden');
+        }
+
+        // ==========================================
+        // 7. MODAL COMPARATIVO E GRÁFICOS (CHART.JS)
+        // ==========================================
+        function openCompareModal() {
+            if (selectedCompareIds.length === 0) return;
+
+            const selectedMats = materialsData.filter(m => selectedCompareIds.includes(m.id));
+
+            renderCompareTable(selectedMats);
+            renderCompareCharts(selectedMats);
+
+            modalCompare.classList.remove('hidden');
+        }
+
+        function closeCompareModal() {
+            modalCompare.classList.add('hidden');
+        }
+
+        function renderCompareTable(mats) {
+            const head = document.getElementById('compare-table-head');
+            const body = document.getElementById('compare-table-body');
+
+            // Header
+            head.innerHTML = `
+                <tr class="bg-slate-100 border-b border-slate-200">
+                    <th class="p-3 text-slate-600 font-bold w-48">Propriedade</th>
+                    ${mats.map(m => `<th class="p-3 font-bold text-slate-900 border-l border-slate-200">${m.name}</th>`).join('')}
+                </tr>
+            `;
+
+            // Atributos para Linhas
+            const rows = [
+                { label: 'Classe', key: 'categoryLabel' },
+                { label: 'Resist. Tração (MPa)', key: 'tensileStrength', suffix: ' MPa' },
+                { label: 'Limite Escoamento (MPa)', key: 'yieldStrength', suffix: ' MPa' },
+                { label: 'Densidade (g/cm³)', key: 'density', suffix: ' g/cm³' },
+                { label: 'Res. Específica (Tração/Densidade)', fn: m => (m.tensileStrength / m.density).toFixed(1) },
+                { label: 'Temp. Máxima (°C)', key: 'maxTemp', suffix: ' °C' },
+                { label: 'Resistência Corrosão', key: 'corrosion' },
+                { label: 'Custo Relativo', key: 'costLabel' },
+                { label: 'Dureza Típica', key: 'hardness' },
+                { label: 'Usinabilidade', key: 'machinability' }
+            ];
+
+            body.innerHTML = rows.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-semibold text-slate-600 bg-slate-50/50">${r.label}</td>
+                    ${mats.map(m => {
+                        let val = r.fn ? r.fn(m) : (m[r.key] + (r.suffix || ''));
+                        return `<td class="p-3 border-l border-slate-200 font-medium">${val}</td>`;
+                    }).join('')}
+                </tr>
+            `).join('');
+        }
+
+        function renderCompareCharts(mats) {
+            // Destruir gráficos anteriores se existirem
+            if (radarChartInstance) radarChartInstance.destroy();
+            if (barChartInstance) barChartInstance.destroy();
+
+            const chartColors = [
+                { bg: 'rgba(2, 132, 199, 0.2)', border: '#0284c7' },   // Blue
+                { bg: 'rgba(16, 185, 129, 0.2)', border: '#10b981' },  // Emerald
+                { bg: 'rgba(245, 158, 11, 0.2)', border: '#f59e0b' },  // Amber
+                { bg: 'rgba(139, 92, 246, 0.2)', border: '#8b5cf6' }   // Purple
+            ];
+
+            // 1. CHART RADAR - Normalização adimensional 0 - 100
+            const radarLabels = [
+                'Tração (MPa)', 
+                'Res. Específica', 
+                'Res. Corrosão', 
+                'Temp. Máxima', 
+                'Economia (1/Custo)'
+            ];
+
+            const radarDatasets = mats.map((m, idx) => {
+                const color = chartColors[idx % chartColors.length];
+                
+                // Normalizações (0 a 100)
+                const normTensile = Math.min(100, (m.tensileStrength / 1800) * 100);
+                const specStr = m.tensileStrength / m.density;
+                const normSpec = Math.min(100, (specStr / 1000) * 100);
+                const normCorrosion = (m.corrosionScore / 4) * 100;
+                const normTemp = Math.min(100, (m.maxTemp / 1000) * 100);
+                const normEcon = ((5 - m.costTier) / 4) * 100; // Custo menor = maior pontuação em economia
+
+                return {
+                    label: m.name,
+                    data: [
+                        Math.round(normTensile),
+                        Math.round(normSpec),
+                        Math.round(normCorrosion),
+                        Math.round(normTemp),
+                        Math.round(normEcon)
+                    ],
+                    backgroundColor: color.bg,
+                    borderColor: color.border,
+                    borderWidth: 2,
+                    pointBackgroundColor: color.border
+                };
+            });
+
+            const ctxRadar = document.getElementById('chart-radar').getContext('2d');
+            radarChartInstance = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: radarLabels,
+                    datasets: radarDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // 2. CHART BAR - Tração vs Densidade
+            const barLabels = mats.map(m => m.name);
+            const ctxBar = document.getElementById('chart-bar').getContext('2d');
+
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: barLabels,
+                    datasets: [
+                        {
+                            label: 'Tração (MPa)',
+                            data: mats.map(m => m.tensileStrength),
+                            backgroundColor: '#0284c7',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Densidade (g/cm³)',
+                            data: mats.map(m => m.density),
+                            backgroundColor: '#f59e0b',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Tração (MPa)', font: { size: 10 } }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Densidade (g/cm³)', font: { size: 10 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 8. EVENT LISTENERS E INICIALIZAÇÃO
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Search
+            document.getElementById('filter-search').addEventListener('input', (e) => {
+                filters.search = e.target.value;
+                render();
+            });
+
+            // Category
+            document.getElementById('filter-category').addEventListener('change', (e) => {
+                filters.category = e.target.value;
+                render();
+            });
+
+            // Tensile Slider
+            const tensileSlider = document.getElementById('filter-tensile');
+            const tensileVal = document.getElementById('val-tensile');
+            tensileSlider.addEventListener('input', (e) => {
+                filters.minTensile = parseInt(e.target.value);
+                tensileVal.textContent = `${filters.minTensile} MPa`;
+                render();
+            });
+
+            // Density Slider
+            const densitySlider = document.getElementById('filter-density');
+            const densityVal = document.getElementById('val-density');
+            densitySlider.addEventListener('input', (e) => {
+                filters.maxDensity = parseFloat(e.target.value);
+                densityVal.textContent = `${filters.maxDensity.toFixed(1)} g/cm³`;
+                render();
+            });
+
+            // Corrosion
+            document.getElementById('filter-corrosion').addEventListener('change', (e) => {
+                filters.corrosion = e.target.value;
+                render();
+            });
+
+            // Cost buttons toggle
+            document.querySelectorAll('.btn-cost-filter').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cost = parseInt(btn.getAttribute('data-cost'));
+                    if (filters.costs.includes(cost)) {
+                        filters.costs = filters.costs.filter(c => c !== cost);
+                        btn.classList.remove('bg-sky-600', 'text-white');
+                        btn.classList.add('bg-slate-50', 'text-slate-600');
+                    } else {
+                        filters.costs.push(cost);
+                        btn.classList.add('bg-sky-600', 'text-white');
+                        btn.classList.remove('bg-slate-50', 'text-slate-600');
+                    }
+                    render();
+                });
+            });
+
+            // Application
+            document.getElementById('filter-application').addEventListener('change', (e) => {
+                filters.application = e.target.value;
+                render();
+            });
+
+            // Sort Selector
+            document.getElementById('sort-by').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                render();
+            });
+
+            // View Mode Switcher
+            const btnViewCards = document.getElementById('btn-view-cards');
+            const btnViewTable = document.getElementById('btn-view-table');
+
+            btnViewCards.addEventListener('click', () => {
+                currentView = 'cards';
+                btnViewCards.className = "px-2.5 py-1 text-xs font-medium rounded-md bg-white text-sky-600 shadow-sm border border-slate-200 transition-all flex items-center gap-1";
+                btnViewTable.className = "px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1";
+                render();
+            });
+
+            btnViewTable.addEventListener('click', () => {
+                currentView = 'table';
+                btnViewTable.className = "px-2.5 py-1 text-xs font-medium rounded-md bg-white text-sky-600 shadow-sm border border-slate-200 transition-all flex items-center gap-1";
+                btnViewCards.className = "px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1";
+                render();
+            });
+
+            // Reset Filters Buttons
+            const resetFn = () => {
+                filters = { search: '', category: 'all', minTensile: 0, maxDensity: 10.0, corrosion: 'all', costs: [], application: 'all' };
+                document.getElementById('filter-search').value = '';
+                document.getElementById('filter-category').value = 'all';
+                tensileSlider.value = 0;
+                tensileVal.textContent = '0 MPa';
+                densitySlider.value = 10.0;
+                densityVal.textContent = '10.0 g/cm³';
+                document.getElementById('filter-corrosion').value = 'all';
+                document.getElementById('filter-application').value = 'all';
+                document.querySelectorAll('.btn-cost-filter').forEach(btn => {
+                    btn.classList.remove('bg-sky-600', 'text-white');
+                    btn.classList.add('bg-slate-50', 'text-slate-600');
+                });
+                render();
+            };
+
+            document.getElementById('btn-reset-filters')?.addEventListener('click', resetFn);
+            document.getElementById('btn-reset-filters-mobile')?.addEventListener('click', resetFn);
+            document.getElementById('btn-reset-empty')?.addEventListener('click', resetFn);
+
+            // Compare Actions
+            document.getElementById('btn-clear-compare').addEventListener('click', () => {
+                selectedCompareIds = [];
+                render();
+            });
+
+            document.getElementById('btn-open-compare').addEventListener('click', openCompareModal);
+            document.getElementById('btn-close-compare').addEventListener('click', closeCompareModal);
+            document.getElementById('btn-close-compare-footer').addEventListener('click', closeCompareModal);
+
+            // Detail Modal Close Buttons
+            document.getElementById('btn-close-detail').addEventListener('click', closeDetailModal);
+            document.getElementById('btn-close-detail-footer').addEventListener('click', closeDetailModal);
+
+            // Mobile Filter Drawer Toggle
+            const sidebar = document.getElementById('sidebar-filters');
+            document.getElementById('btn-mobile-filter').addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+            });
+            document.getElementById('btn-close-mobile-filter').addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+            });
+
+            // Inicializar Renderização
+            render();
+        });
+    </script>
+</body>
+</html>
