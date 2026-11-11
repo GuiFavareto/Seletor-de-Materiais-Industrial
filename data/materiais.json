@@ -1,0 +1,808 @@
+{
+  "materiais": [
+    {
+      "id": "PVC-U",
+      "nome": "PVC-U",
+      "categoria": "Polímero",
+      "tipo": "PVC Rígido Termoplástico de uso geral - policloreto de vinila não plastificado",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.38 - 1.45",
+        "resistencia_tracao_MPa": "40 - 60",
+        "modulo_elasticidade_GPa": "2.4 - 4.1",
+        "temperatura_vicat_C": "75 - 85",
+        "absorcao_agua": "Baixa",
+        "comportamento_quimico": "Boa resistência a muitos ácidos, bases e sais"
+      },
+      "aplicacoes_tipicas": [
+        "Tubulações de água fria, esgoto e drenagem",
+        "Dutos e condução de determinados fluidos químicos",
+        "Conexões, válvulas e componentes rígidos",
+        "Perfis, chapas e componentes industriais",
+        "Aplicações elétricas e de isolamento em formulações apropriadas"
+      ],
+      "caracteristicas_relevantes": [
+        "Boa resistência à corrosão",
+        "Boa rigidez para um termoplástico",
+        "Baixo custo relativo",
+        "Boa resistência química em muitas aplicações",
+        "Processável por extrusão, injeção e usinagem"
+      ],
+      "limitacoes_cuidados": [
+        "Temperatura de serviço é limitada e deve ser analisada juntamente com a pressão",
+        "Verificar compatibilidade com o fluido",
+        "Impacto em baixa temperatura e exposição UV dependem da formulação"
+      ],
+      "logica_selecao_programa": "Forte candidato para dutos e tubulações de baixa/moderada temperatura, principalmente quando corrosão e custo forem fatores importantes."
+    },
+    {
+      "id": "CPVC",
+      "nome": "CPVC",
+      "categoria": "Polímero",
+      "tipo": "Termoplástico clorado - policloreto de vinila clorado",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.50 - 1.58",
+        "resistencia_tracao_MPa": "45 - 60",
+        "modulo_elasticidade_GPa": "2.4 - 3.0",
+        "temperatura_vicat_C": "100 - 115",
+        "temperatura_servico": "Superior ao PVC-U; depende de pressão, grau e fabricante",
+        "comportamento_quimico": "Boa resistência a muitos meios corrosivos"
+      },
+      "aplicacoes_tipicas": [
+        "Tubulações de água quente",
+        "Tubulações e dutos industriais",
+        "Sistemas para determinados produtos químicos corrosivos",
+        "Conexões, válvulas e acessórios",
+        "Processos em que o PVC-U não atende à temperatura requerida"
+      ],
+      "caracteristicas_relevantes": [
+        "Maior resistência térmica que o PVC-U",
+        "Boa resistência à corrosão",
+        "Boa resistência química",
+        "Baixa absorção de água",
+        "Pode reduzir a necessidade de materiais metálicos em certos sistemas"
+      ],
+      "limitacoes_cuidados": [
+        "Pressão admissível diminui com o aumento da temperatura",
+        "Compatibilidade química deve ser verificada para cada fluido",
+        "Custo normalmente superior ao PVC-U"
+      ],
+      "logica_selecao_programa": "Ganhará prioridade quando o usuário indicar tubulação, fluido compatível e temperatura superior à faixa típica do PVC-U."
+    },
+    {
+      "id": "PEAD",
+      "nome": "PEAD / HDPE",
+      "categoria": "Polímero",
+      "tipo": "Termoplástico semicristalino - polietileno de alta densidade",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "0.94 - 0.97",
+        "limite_escoamento_MPa": "20 - 32",
+        "modulo_elasticidade_GPa": "0.8 - 1.5",
+        "temperatura_fusao_C": "125 - 135",
+        "alongamento": "Elevado em muitos graus",
+        "comportamento_quimico": "Boa resistência a muitos agentes químicos e à umidade"
+      },
+      "aplicacoes_tipicas": [
+        "Tubulações de água e redes enterradas",
+        "Dutos de processos e determinados produtos químicos",
+        "Tubulações de gás em classes e normas específicas",
+        "Tanques, recipientes e bombonas",
+        "Revestimentos e componentes resistentes a impacto",
+        "Peças leves sujeitas a umidade"
+      ],
+      "caracteristicas_relevantes": [
+        "Baixa densidade",
+        "Boa resistência ao impacto em muitos graus",
+        "Boa resistência química e à umidade",
+        "Boa flexibilidade para instalação de tubulações",
+        "Boa resistência à corrosão"
+      ],
+      "limitacoes_cuidados": [
+        "Rigidez menor que a de PVC-U, CPVC e metais",
+        "Expansão térmica относительно elevada",
+        "Pode apresentar fluência sob carga prolongada",
+        "Temperatura, pressão e tempo de serviço precisam ser analisados conjuntamente"
+      ],
+      "logica_selecao_programa": "Forte candidato para dutos e tubulações quando exigir baixa densidade, resistência a impacto, flexibilidade e resistência à corrosão."
+    },
+    {
+      "id": "PP",
+      "nome": "PP - Polipropileno",
+      "categoria": "Polímero",
+      "tipo": "Termoplástico semicristalino - polipropileno",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "0.90 - 0.91",
+        "resistencia_tracao_MPa": "25 - 40",
+        "modulo_elasticidade_GPa": "1.1 - 1.8",
+        "temperatura_fusao_C": "160 - 170",
+        "absorcao_agua": "Muito baixa",
+        "comportamento_quimico": "Boa resistência a muitos ácidos, bases e soluções aquosas"
+      },
+      "aplicacoes_tipicas": [
+        "Tubulações e dutos industriais",
+        "Tanques e equipamentos para processos químicos",
+        "Conexões e válvulas",
+        "Peças moldadas por injeção",
+        "Componentes de laboratório",
+        "Embalagens e produtos extrudados"
+      ],
+      "caracteristicas_relevantes": [
+        "Muito baixa densidade",
+        "Boa resistência química",
+        "Baixa absorção de umidade",
+        "Boa processabilidade",
+        "Boa relação custo/desempenho"
+      ],
+      "limitacoes_cuidados": [
+        "Pode sofrer fluência sob carga prolongada",
+        "Resistência a UV depende da estabilização",
+        "Desempenho ao impacto em baixa temperatura pode ser limitado",
+        "Pressão e temperatura precisam ser avaliadas juntas em tubulações"
+      ],
+      "logica_selecao_programa": "Valorizado em aplicações químicas, tanques, dutos e componentes leves quando resistência química e baixa densidade forem prioritárias."
+    },
+    {
+      "id": "POM",
+      "nome": "POM - Poliacetal",
+      "categoria": "Polímero",
+      "tipo": "Termoplástico de engenharia - polioximetileno (acetal)",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.41 - 1.43",
+        "resistencia_tracao_MPa": "60 - 75",
+        "modulo_elasticidade_GPa": "2.6 - 3.2",
+        "absorcao_agua": "Baixa, inferior à das poliamidas",
+        "atrito": "Baixo em aplicações tribológicas apropriadas",
+        "estabilidade_dimensional": "Boa para um termoplástico de engenharia"
+      },
+      "aplicacoes_tipicas": [
+        "Engrenagens plásticas",
+        "Buchas, mancais e guias",
+        "Rolos e roldanas",
+        "Peças de precisão usinadas",
+        "Válvulas e componentes mecânicos",
+        "Componentes sujeitos a deslizamento e desgaste"
+      ],
+      "caracteristicas_relevantes": [
+        "Boa rigidez e resistência mecânica",
+        "Boa resistência ao desgaste",
+        "Baixo atrito",
+        "Boa estabilidade dimensional",
+        "Excelente usinabilidade"
+      ],
+      "limitacoes_cuidados": [
+        "Compatibilidade química não é universal",
+        "Temperatura limita aplicações de alta carga",
+        "Pode apresentar degradação em determinados meios ácidos/oxidantes"
+      ],
+      "logica_selecao_programa": "Candidato importante para engrenagens, buchas, guias e componentes usinados quando baixo atrito, precisão dimensional e resistência ao desgaste forem necessários."
+    },
+    {
+      "id": "PA",
+      "nome": "PA - Poliamida / Nylon",
+      "categoria": "Polímero",
+      "tipo": "Família de termoplásticos de engenharia - PA6 não reforçada",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.12 - 1.15",
+        "resistencia_tracao_MPa": "65 - 85",
+        "modulo_elasticidade_GPa": "2.5 - 3.2",
+        "temperatura_fusao_C": "215 - 225",
+        "absorcao_umidade": "Significativa e relevante ao projeto",
+        "resistencia_desgaste": "Boa em muitos graus"
+      },
+      "aplicacoes_tipicas": [
+        "Engrenagens e rodas dentadas",
+        "Buchas, mancais e roldanas",
+        "Rolos e guias",
+        "Componentes automotivos",
+        "Peças estruturais leves",
+        "Peças sujeitas a impacto e desgaste"
+      ],
+      "caracteristicas_relevantes": [
+        "Boa resistência ao desgaste",
+        "Boa resistência mecânica em relação ao peso",
+        "Boa tenacidade em muitos graus",
+        "Pode substituir metais em determinadas peças",
+        "Boa usinabilidade"
+      ],
+      "limitacoes_cuidados": [
+        "Absorve umidade, alterando dimensões e propriedades",
+        "PA6, PA66, PA12 precisam ser tratadas separadamente",
+        "Temperatura de trabalho e umidade devem entrar na seleção"
+      ],
+      "logica_selecao_programa": "Analisada principalmente para engrenagens, buchas e peças de desgaste, mas a umidade terá peso obrigatório na decisão."
+    },
+    {
+      "id": "PTFE",
+      "nome": "PTFE",
+      "categoria": "Polímero",
+      "tipo": "Fluoropolímero de alto desempenho - politetrafluoretileno",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "2.14 - 2.20",
+        "resistencia_tracao_MPa": "20 - 35",
+        "modulo_elasticidade_GPa": "0.4 - 0.7",
+        "faixa_termica_servico_C": "-200 a 260",
+        "coeficiente_atrito": "Muito baixo",
+        "comportamento_quimico": "Excelente resistência química em ampla variedade de meios"
+      },
+      "aplicacoes_tipicas": [
+        "Vedações e juntas",
+        "Anéis e componentes de vedação",
+        "Revestimentos antiaderentes",
+        "Componentes de baixo atrito",
+        "Peças para ambientes quimicamente agressivos",
+        "Isolamento elétrico",
+        "Revestimentos internos e componentes de válvulas"
+      ],
+      "caracteristicas_relevantes": [
+        "Excelente resistência química",
+        "Muito baixo coeficiente de atrito",
+        "Ampla faixa de temperatura de serviço",
+        "Excelente isolamento elétrico",
+        "Baixa absorção de umidade"
+      ],
+      "limitacoes_cuidados": [
+        "Baixa rigidez em comparação com POM, PA e metais",
+        "Fluência elevada sob carga contínua",
+        "Resistência mecânica relativamente baixa",
+        "Custo superior a polímeros de uso geral"
+      ],
+      "logica_selecao_programa": "Forte candidato quando resistência química, temperatura e baixo atrito forem prioritários, mas perderá pontos em aplicações estruturais submetidas a carga contínua."
+    },
+    {
+      "id": "SAE-1020",
+      "nome": "SAE 1020",
+      "categoria": "Metal",
+      "tipo": "Aço carbono de baixo carbono",
+      "composicao": "C 0,17-0,23%; Mn 0,30-0,60%; P <=0,040%; S <=0,050%; Fe balanço",
+      "condicao_ensaio": "Barra redonda de 25 mm, normalizada a 925 °C e resfriada ao ar.",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 440,
+        "limite_escoamento_MPa": 346,
+        "alongamento_percentual": 35.8,
+        "reducao_area_percentual": 67.9,
+        "dureza_HB": 131,
+        "modulo_elasticidade_GPa": 186,
+        "densidade_g_cm3": 7.87,
+        "charpy_J": "16,9 J a -30 °C"
+      },
+      "aplicacoes_tipicas": [
+        "Eixos pouco solicitados",
+        "Pinos",
+        "Correntes",
+        "Peças usinadas",
+        "Peças que exigem boa ductilidade",
+        "Peças que podem receber cementação quando a resistência do núcleo não é crítica"
+      ],
+      "caracteristicas_relevantes": [
+        "Boa ductilidade",
+        "Boa resposta ao trabalho a frio",
+        "Usinabilidade razoável",
+        "Soldabilidade razoável",
+        "Pode receber cementação"
+      ],
+      "limitacoes_cuidados": [
+        "Não é a escolha automática para cargas severas",
+        "Baixa temperabilidade em comparação com aços ligados",
+        "A seleção deve considerar a solicitação real da peça"
+      ]
+    },
+    {
+      "id": "SAE-1045",
+      "nome": "SAE 1045",
+      "categoria": "Metal",
+      "tipo": "Aço carbono de médio carbono",
+      "composicao": "C 0,42-0,50%; Mn 0,60-0,90%; P <=0,040%; S <=0,050%; Fe balanço",
+      "condicao_ensaio": "Barra redonda de 50-75 mm, trefilada a frio e aliviada de tensões em alta temperatura.",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 585,
+        "limite_escoamento_MPa": 450,
+        "alongamento_percentual": 12.0,
+        "reducao_area_percentual": 35.0,
+        "dureza_HB": 163,
+        "modulo_elasticidade_GPa": 206,
+        "densidade_g_cm3": 7.87
+      },
+      "aplicacoes_tipicas": [
+        "Eixos",
+        "Árvores",
+        "Engrenagens",
+        "Parafusos e prisioneiros",
+        "Peças de máquinas",
+        "Componentes com resistência mecânica moderada/alta",
+        "Peças endurecidas por chama ou indução"
+      ],
+      "caracteristicas_relevantes": [
+        "Pode receber tratamento térmico",
+        "Endurecimento por chama",
+        "Endurecimento por indução",
+        "Boa resposta ao forjamento"
+      ],
+      "limitacoes_cuidados": [
+        "Não é ideal quando alta temperabilidade é essencial",
+        "Não é a escolha típica para cementação convencional",
+        "Soldabilidade inferior à de aços de menor carbono"
+      ]
+    },
+    {
+      "id": "SAE-4140",
+      "nome": "SAE 4140",
+      "categoria": "Metal",
+      "tipo": "Aço baixa liga Cr-Mo",
+      "composicao": "Aproximadamente C 0,38-0,43%; ligado principalmente a Cr e Mo.",
+      "condicao_ensaio": "Propriedades variam fortemente com tratamento térmico, dimensão e condição de fornecimento.",
+      "propriedades_tecnicas": {
+        "caracteristica_principal": "Alta resistência e boa tenacidade",
+        "temperabilidade": "Alta em relação aos aços carbono comuns",
+        "tratamentos": "Têmpera e revenimento; indução; chama; nitretação; nitrocementação",
+        "densidade_g_cm3": 7.85
+      },
+      "aplicacoes_tipicas": [
+        "Eixos",
+        "Árvores de transmissão",
+        "Engrenagens",
+        "Eixos hidráulicos",
+        "Cilindros",
+        "Anéis",
+        "Porcas e Parafusos",
+        "Tirantes",
+        "Componentes de máquinas",
+        "Peças submetidas a cargas elevadas"
+      ],
+      "caracteristicas_relevantes": [
+        "Alta resistência mecânica",
+        "Boa tenacidade",
+        "Boa temperabilidade",
+        "Boa resistência à fadiga",
+        "Endurecimento superficial",
+        "Versátil em tratamentos térmicos"
+      ],
+      "limitacoes_cuidados": [
+        "Custo e processamento superiores aos de aços carbono simples",
+        "Soldagem requer cuidados conforme condição e espessura",
+        "A seleção deve considerar tratamento térmico e seção"
+      ]
+    },
+    {
+      "id": "SAE-4340",
+      "nome": "SAE 4340",
+      "categoria": "Metal",
+      "tipo": "Aço baixa liga Ni-Cr-Mo de alta resistência",
+      "composicao": "Aço ligado principalmente com Ni, Cr e Mo.",
+      "condicao_ensaio": "Temperado em óleo a 800 °C e revenido a 540 °C; corpo de prova redondo de 13 mm.",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 1255,
+        "limite_escoamento_MPa": 1165,
+        "alongamento_percentual": 13.7,
+        "reducao_area_percentual": 45.0,
+        "dureza_HB": 363,
+        "dureza_HRC": 40,
+        "modulo_elasticidade_GPa": 200,
+        "densidade_g_cm3": 7.85
+      },
+      "aplicacoes_tipicas": [
+        "Eixos de alta resistência",
+        "Eixos de transmissão",
+        "Engrenagens e Engrenagens planetárias",
+        "Virabrequins e Bielas",
+        "Pinos",
+        "Máquinas pesadas",
+        "Componentes sujeitos a fadiga ou impacto",
+        "Matrizes",
+        "Componentes aeronáuticos",
+        "Componentes de alta responsabilidade"
+      ],
+      "caracteristicas_relevantes": [
+        "Resistência muito elevada",
+        "Boa resposta ao tratamento térmico",
+        "Boa combinação resistência/ductilidade",
+        "Boa resistência à fadiga",
+        "Alta temperabilidade"
+      ],
+      "limitacoes_cuidados": [
+        "Pode ser superdimensionado quando aço menos ligado atende",
+        "Maior custo e complexidade de tratamento",
+        "Soldagem requer cuidados específicos"
+      ]
+    },
+    {
+      "id": "SAE-8620",
+      "nome": "SAE 8620",
+      "categoria": "Metal",
+      "tipo": "Aço baixa liga Ni-Cr-Mo de baixo carbono, típico de cementação",
+      "composicao": "Aço ligado a Ni, Cr e Mo, com baixo teor de carbono.",
+      "condicao_ensaio": "Barra redonda de 100 mm, normalizada a 915 °C e resfriada ao ar. Não representam o material cementado.",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 565,
+        "limite_escoamento_MPa": 360,
+        "alongamento_percentual": 28.5,
+        "reducao_area_percentual": 62.3,
+        "dureza_HB": 163,
+        "modulo_elasticidade_GPa": 205,
+        "densidade_g_cm3": 7.85
+      },
+      "aplicacoes_tipicas": [
+        "Engrenagens, Pinhões e Coroas",
+        "Engrenagens de redutores",
+        "Eixos estriados e Árvores",
+        "Virabrequins",
+        "Pinos, Correntes e Pinos de corrente",
+        "Fixadores",
+        "Componentes sujeitos a desgaste superficial"
+      ],
+      "caracteristicas_relevantes": [
+        "Excelente candidato à cementação",
+        "Camada superficial dura e resistente ao desgaste",
+        "Núcleo resistente e tenaz após tratamento adequado",
+        "Adequado a componentes sujeitos a contato e desgaste"
+      ],
+      "limitacoes_cuidados": [
+        "Não deve ser avaliado apenas pela resistência do estado normalizado",
+        "Seleção depende da profundidade de camada e tratamento",
+        "Não é automaticamente melhor que 4140/4340 para eixos de alta resistência em toda a seção"
+      ]
+    },
+    {
+      "id": "AISI-304",
+      "nome": "Aço Inoxidável AISI 304",
+      "categoria": "Metal",
+      "tipo": "Aço inoxidável austenítico Cr-Ni de uso geral",
+      "composicao": "C <=0,08%; Cr 18,0-20,0%; Ni 8,0-10,5%; Fe balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 515,
+        "limite_escoamento_MPa": 205,
+        "alongamento_percentual": 40.0,
+        "dureza_HB": 123,
+        "modulo_elasticidade_GPa": 193,
+        "densidade_g_cm3": 8.00
+      },
+      "aplicacoes_tipicas": [
+        "Equipamentos para indústria alimentícia e de bebidas",
+        "Tubulações e tanques para produtos químicos leves",
+        "Componentes farmacêuticos e hospitalares",
+        "Válvulas, conexões e recipientes industriais"
+      ],
+      "caracteristicas_relevantes": [
+        "Excelente resistência à corrosão atmosférica",
+        "Boa conformabilidade e soldabilidade",
+        "Alta tenacidade mesmo em baixas temperaturas"
+      ],
+      "limitacoes_cuidados": [
+        "Suscetível a corrosão por pites em ambientes marinhos ou ricos em cloretos",
+        "Limite de escoamento recozido relativamente baixo em comparação a aços ligados"
+      ],
+      "logica_selecao_programa": "Excelente candidato para equipamentos alimentícios e químicos moderados que exigem alta resistência à corrosão."
+    },
+    {
+      "id": "AISI-316L",
+      "nome": "Aço Inoxidável AISI 316L",
+      "categoria": "Metal",
+      "tipo": "Aço inoxidável austenítico Cr-Ni-Mo de extra baixo carbono",
+      "composicao": "C <=0,03%; Cr 16,0-18,0%; Ni 10,0-14,0%; Mo 2,0-3,0%; Fe balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 580,
+        "limite_escoamento_MPa": 290,
+        "alongamento_percentual": 50.0,
+        "dureza_HB": 150,
+        "modulo_elasticidade_GPa": 193,
+        "densidade_g_cm3": 8.00
+      },
+      "aplicacoes_tipicas": [
+        "Equipamentos marítimos e plataformas off-shore",
+        "Sistemas de tubulação e reatores na indústria química e petroquímica",
+        "Próteses médicas e instrumentos cirúrgicos biomédicos",
+        "Válvulas e conexões submetidas a meios agressivos com cloretos"
+      ],
+      "caracteristicas_relevantes": [
+        "Superior resistência à corrosão por pites e frestas devido ao Molibdênio",
+        "Excelente soldabilidade sem risco de precipitação de carbetos na ZAC",
+        "Excelente biocompatibilidade e resistência química"
+      ],
+      "limitacoes_cuidados": [
+        "Custo superior ao AISI 304",
+        "Tende a encruar durante a usinagem, exigindo ferramentas adequadas"
+      ],
+      "logica_selecao_programa": "Opção de primeira escolha para ambientes marinhos, petroquímicos e biomédicos onde o AISI 304 falharia por corrosão por pites."
+    },
+    {
+      "id": "AL-6061-T6",
+      "nome": "Alumínio 6061-T6",
+      "categoria": "Metal",
+      "tipo": "Liga de alumínio trabalhável endurecida por tratamento térmico (Al-Mg-Si)",
+      "composicao": "Mg 0,8-1,2%; Si 0,4-0,8%; Cu 0,15-0,40%; Al balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 310,
+        "limite_escoamento_MPa": 276,
+        "alongamento_percentual": 12.0,
+        "dureza_HB": 95,
+        "modulo_elasticidade_GPa": 68.9,
+        "densidade_g_cm3": 2.70
+      },
+      "aplicacoes_tipicas": [
+        "Estruturas aeronáuticas e marítimas",
+        "Componentes automotivos e quadros industriais",
+        "Válvulas e peças hidráulicas leves",
+        "Equipamentos onde a redução de peso é crítica"
+      ],
+      "caracteristicas_relevantes": [
+        "Baixa densidade (alta resistência específica)",
+        "Boa resistência à corrosão atmosférica",
+        "Excelente usinabilidade e boa soldabilidade"
+      ],
+      "limitacoes_cuidados": [
+        "Perda de resistência mecânica na zona afetada pelo calor ao soldar",
+        "Módulo de elasticidade menor que o do aço (maior deflexão sob carga)"
+      ],
+      "logica_selecao_programa": "Excelente opção para componentes estruturais leves onde redução de peso é prioritária."
+    },
+    {
+      "id": "AL-7075-T6",
+      "nome": "Alumínio 7075-T6",
+      "categoria": "Metal",
+      "tipo": "Liga de alumínio aeroespacial de ultra alta resistência (Al-Zn-Mg-Cu)",
+      "composicao": "Zn 5,1-6,1%; Mg 2,1-2,9%; Cu 1,2-2,0%; Al balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 570,
+        "limite_escoamento_MPa": 505,
+        "alongamento_percentual": 11.0,
+        "dureza_HB": 150,
+        "modulo_elasticidade_GPa": 71.0,
+        "densidade_g_cm3": 2.81
+      },
+      "aplicacoes_tipicas": [
+        "Estruturas de aeronaves e mísseis altamente solicitadas",
+        "Engrenagens leves, fusos e eixos estruturais",
+        "Moldes de injeção plástica e ferramentas industriais",
+        "Equipamentos militares e esportivos de alto desempenho"
+      ],
+      "caracteristicas_relevantes": [
+        "Resistência mecânica comparável a aços carbono comuns com um terço do peso",
+        "Excelente usinabilidade e alta resistência à fadiga",
+        "Altíssima relação resistência/peso"
+      ],
+      "limitacoes_cuidados": [
+        "Soldabilidade ruim (não recomendado soldar convencional)",
+        "Menor resistência à corrosão em comparação com a série 6000"
+      ],
+      "logica_selecao_programa": "Prioridade máxima em aplicações aeronáuticas e estruturais severas que exigem resistência de aço com peso de alumínio."
+    },
+    {
+      "id": "TI-6AL-4V",
+      "nome": "Titânio Ti-6Al-4V (Grau 5)",
+      "categoria": "Metal",
+      "tipo": "Liga de titânio alfa-beta estrutural e biomédica",
+      "composicao": "Al 5,5-6,75%; V 3,5-4,5%; Fe <=0,40%; Ti balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 950,
+        "limite_escoamento_MPa": 880,
+        "alongamento_percentual": 14.0,
+        "dureza_HRC": 36,
+        "dureza_HB": 334,
+        "modulo_elasticidade_GPa": 114.0,
+        "densidade_g_cm3": 4.43
+      },
+      "aplicacoes_tipicas": [
+        "Componentes de turbinas a jato e estruturas aeronáuticas",
+        "Implantes ortopédicos, próteses e parafusos ósseos biomédicos",
+        "Equipamentos para exploração de petróleo offshore de águas profundas",
+        "Componentes automobilísticos de alta performance e corrida"
+      ],
+      "caracteristicas_relevantes": [
+        "Excepcional resistência específica (Tração/Densidade)",
+        "Resistência à corrosão quase imune em água do mar e fluidos corporais",
+        "Biocompatibilidade perfeita e excelente resistência ao calor até 400°C"
+      ],
+      "limitacoes_cuidados": [
+        "Custo de aquisição e usinagem elevado",
+        "Baixa condutividade térmica, dificultando a dissipação de calor no corte"
+      ],
+      "logica_selecao_programa": "Escolha ideal quando se busca alta resistência mecânica, leveza e biocompatibilidade/resistência química extrema."
+    },
+    {
+      "id": "FERRO-NODULAR-GGG40",
+      "nome": "Ferro Fundido Nodular FE 42012 (GGG-40)",
+      "categoria": "Metal",
+      "tipo": "Ferro fundido nodular de matriz ferrítica com grafita esferoidal",
+      "composicao": "C 3,5-3,8%; Si 2,2-2,8%; Mn 0,1-0,3%; Fe balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 420,
+        "limite_escoamento_MPa": 280,
+        "alongamento_percentual": 12.0,
+        "dureza_HB": 160,
+        "modulo_elasticidade_GPa": 169,
+        "densidade_g_cm3": 7.10
+      },
+      "aplicacoes_tipicas": [
+        "Carcaças de bombas, compressores e redutores industriais",
+        "Corpos de válvulas e conexões sob pressão hidráulica",
+        "Blocos de motores e componentes agrícolas/automotivos",
+        "Engrenagens e virabrequins submetidos a amortecimento de vibração"
+      ],
+      "caracteristicas_relevantes": [
+        "Excelente capacidade de amortecimento de vibrações",
+        "Boa usinabilidade e alta fluidez na fundição para formas complexas",
+        "Boa tenacidade ao impacto para um ferro fundido"
+      ],
+      "limitacoes_cuidados": [
+        "Resistência à tração menor que aços trefilados ou ligados",
+        "Soldabilidade restrita e complexa"
+      ],
+      "logica_selecao_programa": "Seleção recomendada para carcaças, válvulas e componentes fundidos de formas complexas sob amortecimento mecânico."
+    },
+    {
+      "id": "LATAO-C36000",
+      "nome": "Latão C36000 (Free-Cutting)",
+      "categoria": "Metal",
+      "tipo": "Liga de cobre-zinco com adição de chumbo para alta usinabilidade",
+      "composicao": "Cu 60,0-63,0%; Pb 2,5-3,7%; Fe <=0,35%; Zn balanço",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 380,
+        "limite_escoamento_MPa": 150,
+        "alongamento_percentual": 25.0,
+        "dureza_HB": 110,
+        "modulo_elasticidade_GPa": 97,
+        "densidade_g_cm3": 8.50
+      },
+      "aplicacoes_tipicas": [
+        "Conexões roscadas, adaptadores e niples para fluidos e gás",
+        "Componentes usinados de alta precisão em tornos automáticos",
+        "Válvulas, registros, torneiras e corpos de instrumentos",
+        "Pinos elétricos, terminais e buchas leves"
+      ],
+      "caracteristicas_relevantes": [
+        "Padrão de referência mundial para usinabilidade (100% no índice de corte)",
+        "Boa resistência à corrosão atmosférica e à água doce",
+        "Excelente condutividade elétrica e térmica"
+      ],
+      "limitacoes_cuidados": [
+        "Suscetível à dezincificação em água do mar ou meios ácidos",
+        "Baixa soldabilidade devido à presença de chumbo"
+      ],
+      "logica_selecao_programa": "Opção imbatível para usinabilidade extrema em torneamento de conexões, terminais e peças roscadas."
+    },
+    {
+      "id": "SAE-660",
+      "nome": "Bronze SAE 660 (TM 23)",
+      "categoria": "Metal",
+      "tipo": "Liga de bronze com chumbo e estanho (Cu-Sn-Pb-Zn)",
+      "composicao": "Cu 81,0-85,0%; Sn 6,3-7,5%; Pb 6,0-8,0%; Zn 2,0-4,0%",
+      "propriedades_tecnicas": {
+        "resistencia_tracao_MPa": 240,
+        "limite_escoamento_MPa": 120,
+        "dureza_HB": 65,
+        "modulo_elasticidade_GPa": 100,
+        "densidade_g_cm3": 8.90
+      },
+      "aplicacoes_tipicas": [
+        "Buchas e mancais de deslizamento",
+        "Anéis de encosto e discos de fricção",
+        "Guias usinadas e acoplamentos",
+        "Elementos com fricção contínua sob cargas moderadas"
+      ],
+      "caracteristicas_relevantes": [
+        "Excelentes propriedades de antifricção e desgaste",
+        "Ótima usinabilidade e facilidade de acoplamento",
+        "Boa resistência à corrosão em água doce e salobra"
+      ],
+      "limitacoes_cuidados": [
+        "Menor resistência à tração em comparação com aços",
+        "Não recomendado para temperaturas elevadas acima de 220°C"
+      ],
+      "logica_selecao_programa": "Escolha padrão de mercado para buchas, mancais e superfícies de deslizamento sob lubrificação."
+    },
+    {
+      "id": "PEEK",
+      "nome": "PEEK (Poliéter-éter-cetona)",
+      "categoria": "Polímero",
+      "tipo": "Termoplástico semicristalino de altíssimo desempenho",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.30 - 1.32",
+        "resistencia_tracao_MPa": "90 - 100",
+        "modulo_elasticidade_GPa": "3.5 - 4.2",
+        "temperatura_vicat_C": "250 - 300",
+        "comportamento_quimico": "Inerte a quase todos os solventes orgânicos e inorgânicos"
+      },
+      "aplicacoes_tipicas": [
+        "Implantes biomédicos e instrumentos cirúrgicos",
+        "Componentes aeroespaciais sujeitos a altas temperaturas",
+        "Buchas, anéis de vedação e mancais em ambientes químicos agressivos",
+        "Conectores elétricos de alto desempenho"
+      ],
+      "caracteristicas_relevantes": [
+        "Altíssima resistência térmica contínua (até 250°C)",
+        "Excelente resistência química e à hidrólise",
+        "Elevada resistência mecânica e ao desgaste para um polímero"
+      ],
+      "limitacoes_cuidados": [
+        "Custo significativamente elevado em relação a outros termoplásticos",
+        "Atacado por ácido sulfúrico concentrado e reagentes fortemente oxidantes"
+      ],
+      "logica_selecao_programa": "Opção topo de linha para substituir metais em ambientes quimicamente agressivos e de alta temperatura."
+    },
+    {
+      "id": "UHMWPE",
+      "nome": "UHMWPE",
+      "categoria": "Polímero",
+      "tipo": "Polietileno de ultra alto peso molecular",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "0.93 - 0.94",
+        "resistencia_tracao_MPa": "20 - 25",
+        "modulo_elasticidade_GPa": "0.7 - 1.0",
+        "comportamento_quimico": "Alta resistência a abrasão e ataque químico"
+      },
+      "aplicacoes_tipicas": [
+        "Guias de desgaste, réguas e perfis de transporte",
+        "Revestimentos de caçambas e calhas de mineração",
+        "Placas de deslizamento e componentes tribológicos",
+        "Peças submetidas a alto impacto e desgaste por atrito"
+      ],
+      "caracteristicas_relevantes": [
+        "Extrema resistência ao impacto e à abrasão",
+        "Coeficiente de atrito extremamente baixo",
+        "Excelente resistência química e auto-lubrificação"
+      ],
+      "limitacoes_cuidados": [
+        "Baixa rigidez mecânica sob cargas elevadas contínuas",
+        "Temperatura contínua de serviço limitada a ~80°C"
+      ],
+      "logica_selecao_programa": "Recomendado para aplicações tribológicas, revestimentos contra abrasão e peças de alto impacto em temperaturas amenas."
+    },
+    {
+      "id": "PC-POLICARBONATO",
+      "nome": "Policarbonato (PC)",
+      "categoria": "Polímero",
+      "tipo": "Termoplástico amorfo de engenharia transparente",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.20 - 1.22",
+        "resistencia_tracao_MPa": "60 - 70",
+        "modulo_elasticidade_GPa": "2.2 - 2.4",
+        "temperatura_vicat_C": "140 - 150",
+        "comportamento_quimico": "Resistente a ácidos diluídos e óleos; sensível a solventes aromáticos"
+      },
+      "aplicacoes_tipicas": [
+        "Proteções transparentes de máquinas industriais e visores",
+        "Lentes de óculos de segurança e faróis automotivos",
+        "Componentes elétricos e caixas de proteção isolantes",
+        "Capacetes, blindagens e visores resistentes a impacto"
+      ],
+      "caracteristicas_relevantes": [
+        "Extrema resistência ao impacto (praticamente inquebrável)",
+        "Alta transparência óptica (transmitância próxima ao vidro)",
+        "Boa estabilidade dimensional e resistência térmica até 120°C"
+      ],
+      "limitacoes_cuidados": [
+        "Suscetível a riscos superficiais se não for revestido",
+        "Sensível a trincamento por tensão em contato com certos solventes"
+      ],
+      "logica_selecao_programa": "Escolha imbatível quando se necessita de transparência associada a uma altíssima resistência a impactos."
+    },
+    {
+      "id": "COMPOSITO-CARBONO-EPOXI",
+      "nome": "Compósito Fibra de Carbono / Epóxi",
+      "categoria": "Compósito",
+      "tipo": "Material compósito estrutural polimérico reforçado com fibra de carbono contínua",
+      "composicao": "Fibra de Carbono Alta Resistência (60% vol) + Matriz Epóxi (40% vol)",
+      "propriedades_tecnicas": {
+        "densidade_g_cm3": "1.50 - 1.60",
+        "resistencia_tracao_MPa": "1200 - 1800",
+        "modulo_elasticidade_GPa": "120 - 150",
+        "temperatura_vicat_C": "120 - 180",
+        "comportamento_quimico": "Excelente resistência à corrosão, sais e solventes"
+      },
+      "aplicacoes_tipicas": [
+        "Estruturas primárias aeronáuticas e espaçonaves",
+        "Chassis de carros de corrida e componentes esportivos de elite",
+        "Pás de turbinas eólicas e eixos cardã leves de alta rotação",
+        "Próteses estruturais avançadas e braços robóticos industriais"
+      ],
+      "caracteristicas_relevantes": [
+        "Extrema rigidez e resistência mecânica com densidade menor que a do alumínio",
+        "Imunidade total à corrosão metálica",
+        "Alta resistência à fadiga sob cargas cíclicas"
+      ],
+      "limitacoes_cuidados": [
+        "Custo extremamente alto e processo de fabricação complexo",
+        "Comportamento frágil na falha sem escoamento plástico prévio"
+      ],
+      "logica_selecao_programa": "Seleção de altíssimo desempenho para estruturas leves de ponta onde o custo não é o fator limitante primário."
+    }
+  ]
+}
