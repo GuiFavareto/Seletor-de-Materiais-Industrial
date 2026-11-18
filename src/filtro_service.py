@@ -23,7 +23,7 @@ class FiltroMaterialService:
 
     def _obter_limite_temperatura(self, mat):
         mat_id = mat.get("id", "").upper()
-        
+
         limites_conhecidos = {
             "PVC-U": 60,
             "CPVC": 90,
@@ -50,25 +50,75 @@ class FiltroMaterialService:
             "AISI-304": 800,
             "AISI-316L": 800,
         }
-        
+
         if mat_id in limites_conhecidos:
             return limites_conhecidos[mat_id]
-        
+
         if mat.get("categoria") == "Metal":
             return 400
-        
+
         prop = mat.get("propriedades_tecnicas", {})
         temp = self._extrair_numero(prop.get("temperatura_vicat_C") or prop.get("temperatura_fusao_C"))
         if temp:
             return temp - 15
-            
+
         return 100
+
+    def _obter_indice_custo(self, mat):
+        """Retorna (nivel: 1..4, simbolo: '$'..'$$$$', descricao: str)"""
+        mat_id = mat.get("id", "").upper()
+
+        # Permite sobrescrever no JSON caso o campo 'custo_relativo' exista
+        nivel = mat.get("custo_relativo")
+
+        if nivel is None:
+            mapa_custos = {
+                # 1 ($): Commodities industriais / baixo custo
+                "SAE-1020": 1,
+                "GGG-40": 1,
+                "PVC-U": 1,
+                "PP": 1,
+                "PEAD": 1,
+                # 2 ($$): Engenharia padrão / custo moderado
+                "SAE-1045": 2,
+                "SAE-8620": 2,
+                "SAE-4140": 2,
+                "AL-6061-T6": 2,
+                "CPVC": 2,
+                "PA": 2,
+                "POM": 2,
+                "UHMWPE": 2,
+                "PC-POLICARBONATO": 2,
+                # 3 ($$$): Ligas nobres / custo elevado
+                "SAE-4340": 3,
+                "AISI-304": 3,
+                "AISI-316L": 3,
+                "AL-7075-T6": 3,
+                "C36000": 3,
+                "SAE-660": 3,
+                "PTFE": 3,
+                # 4 ($$$$): Materiais especiais / aeroespaciais
+                "TI-6AL-4V": 4,
+                "PEEK": 4,
+                "COMPOSITO-CARBONO-EPOXI": 4,
+            }
+            nivel = mapa_custos.get(mat_id, 2)
+
+        descricoes = {
+            1: ("$", "Baixo (Commodity)"),
+            2: ("$$", "Moderado (Padrão)"),
+            3: ("$$$", "Elevado (Liga Nobre)"),
+            4: ("$$$$", "Muito Alto (Especial)"),
+        }
+        simbolo, desc = descricoes.get(nivel, ("$$", "Moderado"))
+        return nivel, simbolo, desc
 
     def selecionar(self, condicoes):
         temp_req = condicoes.get('temperatura_C', 25)
         kw = condicoes.get('aplicacao', '').lower().strip()
         quimico_req = condicoes.get('contato_quimico', False)
         esforco = condicoes.get('esforco_mecanico', 'moderado').lower()
+        prioridade_custo = condicoes.get('prioridade_custo', 'equilibrado').lower()
 
         resultados = []
 
@@ -89,13 +139,11 @@ class FiltroMaterialService:
                 detalhamento.append({"Critério": "Temperatura", "Pontos": "+20", "Observação": f"Compatível (Máx: {temp_max} °C)"})
 
             # 1.1 REFINAMENTO TÉRMICO (MARGEM DE SEGURANÇA E FRIO INTENSO)
-            # Penaliza operação acima de 80% do limite térmico (favorece ligas com folga térmica)
             if temp_req > (temp_max * 0.80):
                 pontuacao -= 15
                 limitacoes.append(f"Operando próximo ao limite térmico máximo ({temp_req} °C de {temp_max} °C).")
                 detalhamento.append({"Critério": "Margem Térmica", "Pontos": "-15", "Observação": "Próximo ao limite (>80%)"})
 
-            # Penaliza aços carbono comuns abaixo de -10 °C (risco de transição dúctil-frágil)
             if temp_req < -10:
                 if m_id in ["SAE-1020", "SAE-1045", "SAE-8620", "SAE-4140", "GGG-40"]:
                     pontuacao -= 25
@@ -109,7 +157,7 @@ class FiltroMaterialService:
             # 2. ESFORÇO MECÂNICO & TRATAMENTO DE CREEP/FLUÊNCIA
             prop = m.get("propriedades_tecnicas", {})
             tracao = self._extrair_numero(prop.get("resistencia_tracao_MPa") or prop.get("limite_escoamento_MPa"))
-            
+
             if tracao is None and m_id == "SAE-4140":
                 tracao = 1000.0
 
@@ -127,7 +175,7 @@ class FiltroMaterialService:
                         pontuacao += 10
                         justificativas.append(f"Resistência moderada ({tracao:.0f} MPa); atende a esforços controlados.")
                         detalhamento.append({"Critério": "Esforço Mecânico", "Pontos": "+10", "Observação": f"Moderado ({tracao:.0f} MPa)"})
-                    else:  # Baixa resistência mecânica (ex: PTFE ~28 MPa, UHMWPE, PEAD)
+                    else:
                         pontuacao -= 40
                         limitacoes.append(f"ALERTA: Baixa resistência à tração ({tracao:.0f} MPa) e alta tendência à fluência (creep) sob esforço mecânico elevado.")
                         detalhamento.append({"Critério": "Esforço Mecânico", "Pontos": "-40", "Observação": f"Crítico ({tracao:.0f} MPa - risco de deformação)"})
@@ -147,7 +195,7 @@ class FiltroMaterialService:
             if quimico_req:
                 comp_quim = str(prop.get("comportamento_quimico", "")).lower()
                 carac_str = " ".join(m.get("caracteristicas_relevantes", [])).lower()
-                
+
                 if m_id in ["PTFE", "PEEK", "AISI-316L", "TI-6AL-4V", "COMPOSITO-CARBONO-EPOXI"]:
                     pontuacao += 40
                     justificativas.append("Excepcional resistência e inércia química.")
@@ -161,7 +209,45 @@ class FiltroMaterialService:
                     limitacoes.append("Resistência química limitada para meios agressivos.")
                     detalhamento.append({"Critério": "Resistência Química", "Pontos": "-15", "Observação": "Não recomendado para meio corrosivo"})
 
-            # 4. PALAVRA-CHAVE DE APLICAÇÃO
+            # 4. ÍNDICE DE CUSTO-BENEFÍCIO
+            custo_nivel, custo_simbolo, custo_desc = self._obter_indice_custo(m)
+
+            if prioridade_custo in ["economico", "econômico"]:
+                if custo_nivel == 1:
+                    pontuacao += 25
+                    justificativas.append(f"Excelente custo-benefício ({custo_simbolo} — baixo custo de aquisição).")
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "+25", "Observação": f"{custo_simbolo} {custo_desc}"})
+                elif custo_nivel == 2:
+                    pontuacao += 10
+                    justificativas.append(f"Custo moderado e competitivo ({custo_simbolo}).")
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "+10", "Observação": f"{custo_simbolo} {custo_desc}"})
+                elif custo_nivel == 3:
+                    pontuacao -= 15
+                    limitacoes.append(f"Custo elevado ({custo_simbolo}) frente à prioridade econômica.")
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "-15", "Observação": f"{custo_simbolo} {custo_desc}"})
+                else:  # nivel 4
+                    pontuacao -= 35
+                    limitacoes.append(f"Custo muito elevado ({custo_simbolo} — material especial); avaliar viabilidade financeira.")
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "-35", "Observação": f"{custo_simbolo} {custo_desc}"})
+
+            elif prioridade_custo == "equilibrado":
+                if custo_nivel == 1:
+                    pontuacao += 10
+                    justificativas.append(f"Baixo custo ({custo_simbolo}) favorece a viabilidade do projeto.")
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "+10", "Observação": f"{custo_simbolo} {custo_desc}"})
+                elif custo_nivel == 2:
+                    pontuacao += 5
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "+5", "Observação": f"{custo_simbolo} {custo_desc}"})
+                elif custo_nivel == 4:
+                    pontuacao -= 12
+                    limitacoes.append(f"Custo muito elevado ({custo_simbolo}); indicado apenas quando ligas padrão não atendem.")
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "-12", "Observação": f"{custo_simbolo} {custo_desc}"})
+                else:
+                    detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "0", "Observação": f"{custo_simbolo} {custo_desc}"})
+            else:  # performance
+                detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "0", "Observação": f"{custo_simbolo} (Modo Performance)"})
+
+            # 5. PALAVRA-CHAVE DE APLICAÇÃO
             if kw:
                 aplicacoes = " ".join(m.get("aplicacoes_tipicas", [])).lower()
                 nome_tipo = (m["nome"] + " " + m["tipo"]).lower()
@@ -174,6 +260,9 @@ class FiltroMaterialService:
                 "id": m["id"],
                 "material": m["nome"],
                 "categoria": m["categoria"],
+                "custo_nivel": custo_nivel,
+                "custo_simbolo": custo_simbolo,
+                "custo_desc": custo_desc,
                 "pontuacao": pontuacao,
                 "justificativas": justificativas,
                 "limitacoes": limitacoes,

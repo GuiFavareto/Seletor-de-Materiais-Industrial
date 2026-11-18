@@ -41,13 +41,14 @@ def obter_servico():
 
 
 @st.cache_data
-def executar_selecao(temperatura, esforco, quimico, aplicacao):
+def executar_selecao(temperatura, esforco, quimico, aplicacao, prioridade_custo):
     servico = obter_servico()
     condicoes = {
         "temperatura_C": temperatura,
         "esforco_mecanico": esforco.lower(),
         "contato_quimico": quimico,
         "aplicacao": aplicacao,
+        "prioridade_custo": prioridade_custo.lower(),
     }
     return servico.selecionar(condicoes)
 
@@ -71,12 +72,13 @@ def obter_dataframe_catalogo():
         tracao = _extrair_num(prop.get("resistencia_tracao_MPa") or prop.get("limite_escoamento_MPa"))
         densidade = _extrair_num(prop.get("densidade_g_cm3"))
         temp_max = servico._obter_limite_temperatura(m)
+        _, custo_simbolo, custo_desc = servico._obter_indice_custo(m)
         linhas.append(
             {
                 "ID": m.get("id", ""),
                 "Material": m.get("nome", ""),
                 "Categoria": m.get("categoria", ""),
-                "Tipo": m.get("tipo", ""),
+                "Custo": f"{custo_simbolo} ({custo_desc.split(' ')[0]})",
                 "Tração / Escoamento (MPa)": tracao,
                 "Densidade (g/cm³)": densidade,
                 "Temp. Máx. Serviço (°C)": temp_max,
@@ -90,17 +92,14 @@ def obter_dataframe_catalogo():
 # 3. COMPONENTE: ESTATÍSTICAS PARA NERDS (TELEMETRIA DE ENGENHARIA)
 # ==============================================================================
 def renderizar_stats_for_nerds(item, mat_raw, temp_req, temp_max, latencia_ms):
-    # Monta a equação matemática do Score
     partes_eq = ["Base(50)"]
     for d in item.get("detalhamento", []):
         partes_eq.append(f"{d['Pontos']} ({d['Critério']})")
     equacao_str = " ".join(partes_eq) + f" = {item['pontuacao']} pts"
 
-    # Calcula margem térmica
     folga_termica = temp_max - temp_req
     uso_termico_pct = max(0.0, (temp_req / temp_max) * 100) if temp_max > 0 else 0.0
 
-    # Formata propriedades técnicas brutas
     props = mat_raw.get("propriedades_tecnicas", {})
     props_formatadas = " | ".join(
         [f"{k.replace('_', ' ')}: {v}" for k, v in props.items()]
@@ -116,13 +115,14 @@ def renderizar_stats_for_nerds(item, mat_raw, temp_req, temp_max, latencia_ms):
         '🤓 ESTATÍSTICAS PARA NERDS // TELEMETRIA DE ENGENHARIA'
         '</div>'
         f'<div><span style="color:#9CA3AF;">Material ID / Classe:</span> {item["id"]} • {mat_raw.get("tipo", "-")}</div>'
+        f'<div><span style="color:#9CA3AF;">Índice Econômico:</span> {item["custo_simbolo"]} — {item["custo_desc"]}</div>'
         f'<div><span style="color:#9CA3AF;">Equação do Score:</span> <span style="color:#34D399;">{equacao_str}</span></div>'
         f'<div><span style="color:#9CA3AF;">Regime Térmico:</span> {temp_req} °C / {temp_max} °C máx '
         f'(Uso: {uso_termico_pct:.1f}% | Folga: +{folga_termica} °C)</div>'
         f'<div><span style="color:#9CA3AF;">Datasheet Bruto:</span> {props_formatadas}</div>'
         f'<div><span style="color:#9CA3AF;">Aplicações Base:</span> {aplicacoes_str}</div>'
         f'<div style="color:#9CA3AF; margin-top:4px; font-size:11px;">'
-        f'Latência de Inferência: {latencia_ms:.2f} ms | Motor: FiltroMaterialService v2.1'
+        f'Latência de Inferência: {latencia_ms:.2f} ms | Motor: FiltroMaterialService v2.2'
         f'</div>'
         '</div>'
     )
@@ -133,11 +133,11 @@ def renderizar_stats_for_nerds(item, mat_raw, temp_req, temp_max, latencia_ms):
 # 4. GERENCIAMENTO DE ESTADO & CENÁRIOS RÁPIDOS (1 CLIQUE)
 # ==============================================================================
 CENARIOS = {
-    "Uso Geral": {"temp": 25, "esforco": "Moderado", "quimico": False, "kw": ""},
-    "⚙️ Eixo / Engrenagem": {"temp": 80, "esforco": "Alto", "quimico": False, "kw": "engrenagem"},
-    "🧪 Meio Corrosivo": {"temp": 60, "esforco": "Moderado", "quimico": True, "kw": ""},
-    "❄️ Criogenia (-50°C)": {"temp": -50, "esforco": "Alto", "quimico": False, "kw": ""},
-    "🔥 Alta Temp. (300°C)": {"temp": 300, "esforco": "Alto", "quimico": False, "kw": ""},
+    "Uso Geral": {"temp": 25, "esforco": "Moderado", "quimico": False, "custo": "Equilibrado", "kw": ""},
+    "⚙️ Eixo / Engrenagem": {"temp": 80, "esforco": "Alto", "quimico": False, "custo": "Econômico", "kw": "engrenagem"},
+    "🧪 Meio Corrosivo": {"temp": 60, "esforco": "Moderado", "quimico": True, "custo": "Equilibrado", "kw": ""},
+    "❄️ Criogenia (-50°C)": {"temp": -50, "esforco": "Alto", "quimico": False, "custo": "Performance", "kw": ""},
+    "🔥 Alta Temp. (300°C)": {"temp": 300, "esforco": "Alto", "quimico": False, "custo": "Performance", "kw": ""},
 }
 
 if "temp" not in st.session_state:
@@ -146,6 +146,8 @@ if "esforco" not in st.session_state:
     st.session_state.esforco = "Moderado"
 if "quimico" not in st.session_state:
     st.session_state.quimico = False
+if "custo" not in st.session_state:
+    st.session_state.custo = "Equilibrado"
 if "kw" not in st.session_state:
     st.session_state.kw = ""
 
@@ -157,6 +159,7 @@ def aplicar_cenario():
         st.session_state.temp = cfg["temp"]
         st.session_state.esforco = cfg["esforco"]
         st.session_state.quimico = cfg["quimico"]
+        st.session_state.custo = cfg["custo"]
         st.session_state.kw = cfg["kw"]
 
 
@@ -164,12 +167,13 @@ def resetar_filtros():
     st.session_state.temp = 25
     st.session_state.esforco = "Moderado"
     st.session_state.quimico = False
+    st.session_state.custo = "Equilibrado"
     st.session_state.kw = ""
     st.session_state.cenario_selecionado = None
 
 
 # ==============================================================================
-# 5. BARRA LATERAL (CONTROLES INTUITIVOS + MODO NERD)
+# 5. BARRA LATERAL (CONTROLES INTUITIVOS + CUSTO + MODO NERD)
 # ==============================================================================
 with st.sidebar:
     st.markdown("### ⚙️ Parâmetros de Projeto")
@@ -204,6 +208,16 @@ with st.sidebar:
     if not esforco_req:
         esforco_req = "Moderado"
 
+    custo_req = st.segmented_control(
+        "Prioridade Financeira",
+        options=["Econômico", "Equilibrado", "Performance"],
+        key="custo",
+        selection_mode="single",
+        help="Econômico prioriza materiais baratos ($/$$); Performance ignora o custo para máxima resistência.",
+    )
+    if not custo_req:
+        custo_req = "Equilibrado"
+
     quimico_req = st.toggle(
         "Ambiente Químico / Corrosivo",
         key="quimico",
@@ -236,7 +250,7 @@ mapa_materiais = {m["id"]: m for m in servico.materiais}
 total_base = len(servico.materiais)
 
 t_inicio = time.perf_counter()
-resultados = executar_selecao(temp_req, esforco_req, quimico_req, kw_req)
+resultados = executar_selecao(temp_req, esforco_req, quimico_req, kw_req, custo_req)
 latencia_ms = (time.perf_counter() - t_inicio) * 1000
 
 st.title("Seletor Inteligente de Materiais")
@@ -249,13 +263,17 @@ with col_kpi1:
 with col_kpi2:
     with st.container(border=True):
         top_nome = resultados[0]["material"] if resultados else "Nenhum"
-        top_pts = f"{resultados[0]['pontuacao']} pts" if resultados else "Ajuste os filtros"
+        top_pts = (
+            f"{resultados[0]['pontuacao']} pts • Custo {resultados[0]['custo_simbolo']}"
+            if resultados
+            else "Ajuste os filtros"
+        )
         st.metric("Recomendação #1", top_nome, delta=top_pts)
 with col_kpi3:
     with st.container(border=True):
         regime = f"{temp_req} °C • Esforço {esforco_req}"
-        tag_quim = "Corrosivo" if quimico_req else "Sem ataque químico"
-        st.metric("Condição Analisada", regime, delta=tag_quim, delta_color="off")
+        tag_sub = f"Foco {custo_req}" + (" • Corrosivo" if quimico_req else "")
+        st.metric("Condição Analisada", regime, delta=tag_sub, delta_color="off")
 
 st.write("")
 
@@ -294,11 +312,14 @@ with tab_rec:
             with st.container(border=True):
                 c1, c2, c3 = st.columns([4.5, 1.3, 1.5], vertical_alignment="center")
                 with c1:
-                    st.markdown(f"**{medalhas[idx]} — {item['material']}** &nbsp; `{item['categoria']}`")
+                    st.markdown(
+                        f"**{medalhas[idx]} — {item['material']}** &nbsp; "
+                        f"`{item['categoria']}` &nbsp; `{item['custo_simbolo']}`"
+                    )
                     resumo = item["justificativas"][0] if item["justificativas"] else "Compatível com os parâmetros."
                     st.caption(resumo)
                     if item["limitacoes"]:
-                        alertas_criticos = [a for a in item["limitacoes"] if "ALERTA" in a or "próximo" in a.lower()]
+                        alertas_criticos = [a for a in item["limitacoes"] if "ALERTA" in a or "próximo" in a.lower() or "elevado" in a.lower()]
                         if alertas_criticos:
                             st.caption(f"⚠️ {alertas_criticos[0]}")
 
@@ -308,6 +329,7 @@ with tab_rec:
                 with c3:
                     with st.popover("Ver Análise", use_container_width=True):
                         st.markdown(f"#### {item['material']}")
+                        st.caption(f"Índice de Custo: **{item['custo_simbolo']} ({item['custo_desc']})**")
                         st.markdown("**Por que foi recomendado:**")
                         for j in item["justificativas"]:
                             st.markdown(f"- ✅ {j}")
@@ -325,7 +347,6 @@ with tab_rec:
                                 use_container_width=True,
                             )
 
-                # Exibe o painel estilo YouTube se "Estatísticas para Nerds" estiver ativo
                 if modo_nerd:
                     renderizar_stats_for_nerds(item, mat_raw, temp_req, temp_max, latencia_ms)
 
@@ -338,7 +359,9 @@ with tab_rec:
 
                     col_a, col_b, col_c = st.columns([4.5, 1.3, 1.5], vertical_alignment="center")
                     with col_a:
-                        st.markdown(f"**#{pos} {item['material']}** `{item['categoria']}`")
+                        st.markdown(
+                            f"**#{pos} {item['material']}** `{item['categoria']}` `{item['custo_simbolo']}`"
+                        )
                     with col_b:
                         st.write(f"**{item['pontuacao']} pts**")
                     with col_c:
@@ -389,7 +412,7 @@ with tab_graf:
         color="Categoria",
         text="ID",
         hover_name="Material",
-        hover_data=["Tipo", "Temp. Máx. Serviço (°C)"],
+        hover_data=["Custo", "Temp. Máx. Serviço (°C)"],
         color_discrete_map={
             "Metal": "#0F62FE",
             "Polímero": "#198038",
@@ -418,9 +441,14 @@ with tab_ficha:
     mat_obj = next((m for m in servico.materiais if m["nome"] == escolhido), None)
 
     if mat_obj:
+        _, custo_simb, custo_txt = servico._obter_indice_custo(mat_obj)
         with st.container(border=True):
             st.markdown(f"### {mat_obj['nome']}")
-            st.caption(f"**Categoria:** {mat_obj.get('categoria', '-')} &nbsp;|&nbsp; **Classe:** {mat_obj.get('tipo', '-')}")
+            st.caption(
+                f"**Categoria:** {mat_obj.get('categoria', '-')} &nbsp;|&nbsp; "
+                f"**Classe:** {mat_obj.get('tipo', '-')} &nbsp;|&nbsp; "
+                f"**Custo Relativo:** {custo_simb} ({custo_txt})"
+            )
 
             col_esq, col_dir = st.columns(2, gap="large")
 
