@@ -36,9 +36,19 @@ class FiltroMaterialService:
             "PTFE": 260,
             "PEEK": 250,
             "COMPOSITO-CARBONO-EPOXI": 180,
+            "C36000": 200,
             "SAE-660": 220,
             "AL-6061-T6": 150,
             "AL-7075-T6": 120,
+            "SAE-1020": 350,
+            "SAE-1045": 350,
+            "SAE-8620": 350,
+            "GGG-40": 400,
+            "SAE-4140": 450,
+            "SAE-4340": 450,
+            "TI-6AL-4V": 550,
+            "AISI-304": 800,
+            "AISI-316L": 800,
         }
         
         if mat_id in limites_conhecidos:
@@ -67,6 +77,7 @@ class FiltroMaterialService:
             justificativas = []
             limitacoes = list(m.get("limitacoes_cuidados", []))
             detalhamento = []
+            m_id = m.get("id", "").upper()
 
             # 1. TEMPERATURA DE OPERAÇÃO
             temp_max = self._obter_limite_temperatura(m)
@@ -77,11 +88,29 @@ class FiltroMaterialService:
                 justificativas.append(f"Suporta a temperatura de trabalho ({temp_req} °C <= máx {temp_max} °C).")
                 detalhamento.append({"Critério": "Temperatura", "Pontos": "+20", "Observação": f"Compatível (Máx: {temp_max} °C)"})
 
+            # 1.1 REFINAMENTO TÉRMICO (MARGEM DE SEGURANÇA E FRIO INTENSO)
+            # Penaliza operação acima de 80% do limite térmico (favorece ligas com folga térmica)
+            if temp_req > (temp_max * 0.80):
+                pontuacao -= 15
+                limitacoes.append(f"Operando próximo ao limite térmico máximo ({temp_req} °C de {temp_max} °C).")
+                detalhamento.append({"Critério": "Margem Térmica", "Pontos": "-15", "Observação": "Próximo ao limite (>80%)"})
+
+            # Penaliza aços carbono comuns abaixo de -10 °C (risco de transição dúctil-frágil)
+            if temp_req < -10:
+                if m_id in ["SAE-1020", "SAE-1045", "SAE-8620", "SAE-4140", "GGG-40"]:
+                    pontuacao -= 25
+                    limitacoes.append("ALERTA: Risco de fragilização a frio (transição dúctil-frágil) em temperaturas negativas.")
+                    detalhamento.append({"Critério": "Baixa Temperatura", "Pontos": "-25", "Observação": "Risco de fratura frágil"})
+                elif m_id in ["AISI-304", "AISI-316L", "AL-6061-T6", "AL-7075-T6", "TI-6AL-4V", "PTFE"]:
+                    pontuacao += 10
+                    justificativas.append("Excelente tenacidade e estabilidade em temperaturas negativas/criogênicas.")
+                    detalhamento.append({"Critério": "Baixa Temperatura", "Pontos": "+10", "Observação": "Ótimo desempenho a frio"})
+
             # 2. ESFORÇO MECÂNICO & TRATAMENTO DE CREEP/FLUÊNCIA
             prop = m.get("propriedades_tecnicas", {})
             tracao = self._extrair_numero(prop.get("resistencia_tracao_MPa") or prop.get("limite_escoamento_MPa"))
             
-            if tracao is None and m["id"] == "SAE-4140":
+            if tracao is None and m_id == "SAE-4140":
                 tracao = 1000.0
 
             if esforco == "alto":
@@ -116,7 +145,6 @@ class FiltroMaterialService:
 
             # 3. RESISTÊNCIA QUÍMICA
             if quimico_req:
-                m_id = m["id"]
                 comp_quim = str(prop.get("comportamento_quimico", "")).lower()
                 carac_str = " ".join(m.get("caracteristicas_relevantes", [])).lower()
                 
