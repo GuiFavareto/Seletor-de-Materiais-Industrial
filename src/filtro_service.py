@@ -67,19 +67,15 @@ class FiltroMaterialService:
     def _obter_indice_custo(self, mat):
         """Retorna (nivel: 1..4, simbolo: '$'..'$$$$', descricao: str)"""
         mat_id = mat.get("id", "").upper()
-
-        # Permite sobrescrever no JSON caso o campo 'custo_relativo' exista
         nivel = mat.get("custo_relativo")
 
         if nivel is None:
             mapa_custos = {
-                # 1 ($): Commodities industriais / baixo custo
                 "SAE-1020": 1,
                 "GGG-40": 1,
                 "PVC-U": 1,
                 "PP": 1,
                 "PEAD": 1,
-                # 2 ($$): Engenharia padrão / custo moderado
                 "SAE-1045": 2,
                 "SAE-8620": 2,
                 "SAE-4140": 2,
@@ -89,7 +85,6 @@ class FiltroMaterialService:
                 "POM": 2,
                 "UHMWPE": 2,
                 "PC-POLICARBONATO": 2,
-                # 3 ($$$): Ligas nobres / custo elevado
                 "SAE-4340": 3,
                 "AISI-304": 3,
                 "AISI-316L": 3,
@@ -97,7 +92,6 @@ class FiltroMaterialService:
                 "C36000": 3,
                 "SAE-660": 3,
                 "PTFE": 3,
-                # 4 ($$$$): Materiais especiais / aeroespaciais
                 "TI-6AL-4V": 4,
                 "PEEK": 4,
                 "COMPOSITO-CARBONO-EPOXI": 4,
@@ -123,7 +117,7 @@ class FiltroMaterialService:
         resultados = []
 
         for m in self.materiais:
-            pontuacao = 50  # Pontuação base
+            pontuacao = 50
             justificativas = []
             limitacoes = list(m.get("limitacoes_cuidados", []))
             detalhamento = []
@@ -138,7 +132,7 @@ class FiltroMaterialService:
                 justificativas.append(f"Suporta a temperatura de trabalho ({temp_req} °C <= máx {temp_max} °C).")
                 detalhamento.append({"Critério": "Temperatura", "Pontos": "+20", "Observação": f"Compatível (Máx: {temp_max} °C)"})
 
-            # 1.1 REFINAMENTO TÉRMICO (MARGEM DE SEGURANÇA E FRIO INTENSO)
+            # 1.1 REFINAMENTO TÉRMICO
             if temp_req > (temp_max * 0.80):
                 pontuacao -= 15
                 limitacoes.append(f"Operando próximo ao limite térmico máximo ({temp_req} °C de {temp_max} °C).")
@@ -154,7 +148,7 @@ class FiltroMaterialService:
                     justificativas.append("Excelente tenacidade e estabilidade em temperaturas negativas/criogênicas.")
                     detalhamento.append({"Critério": "Baixa Temperatura", "Pontos": "+10", "Observação": "Ótimo desempenho a frio"})
 
-            # 2. ESFORÇO MECÂNICO & TRATAMENTO DE CREEP/FLUÊNCIA
+            # 2. ESFORÇO MECÂNICO & FLUÊNCIA
             prop = m.get("propriedades_tecnicas", {})
             tracao = self._extrair_numero(prop.get("resistencia_tracao_MPa") or prop.get("limite_escoamento_MPa"))
 
@@ -186,7 +180,7 @@ class FiltroMaterialService:
                     pontuacao += 20
                     justificativas.append("Resistência mecânica adequada ao uso geral.")
                     detalhamento.append({"Critério": "Esforço Mecânico", "Pontos": "+20", "Observação": "Adequado"})
-            else:  # baixo
+            else:
                 pontuacao += 15
                 justificativas.append("Atende perfeitamente a baixas solicitações mecânicas.")
                 detalhamento.append({"Critério": "Esforço Mecânico", "Pontos": "+15", "Observação": "Carga leve"})
@@ -225,7 +219,7 @@ class FiltroMaterialService:
                     pontuacao -= 15
                     limitacoes.append(f"Custo elevado ({custo_simbolo}) frente à prioridade econômica.")
                     detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "-15", "Observação": f"{custo_simbolo} {custo_desc}"})
-                else:  # nivel 4
+                else:
                     pontuacao -= 35
                     limitacoes.append(f"Custo muito elevado ({custo_simbolo} — material especial); avaliar viabilidade financeira.")
                     detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "-35", "Observação": f"{custo_simbolo} {custo_desc}"})
@@ -244,7 +238,7 @@ class FiltroMaterialService:
                     detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "-12", "Observação": f"{custo_simbolo} {custo_desc}"})
                 else:
                     detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "0", "Observação": f"{custo_simbolo} {custo_desc}"})
-            else:  # performance
+            else:
                 detalhamento.append({"Critério": "Custo-Benefício", "Pontos": "0", "Observação": f"{custo_simbolo} (Modo Performance)"})
 
             # 5. PALAVRA-CHAVE DE APLICAÇÃO
